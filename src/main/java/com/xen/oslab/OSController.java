@@ -4,12 +4,14 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 
 public class OSController {
 
     @FXML
-    private GridPane desktopGrid;
+    private Pane desktopPane;
+
+    private final SnapOnGrid snapper = new SnapOnGrid();
 
     @FXML
     public void initialize() {
@@ -18,22 +20,34 @@ public class OSController {
 
         desktopMenu.getItems().addAll(newFolder);
 
-        desktopGrid.setOnMouseClicked(e-> {
+        desktopPane.setOnMouseClicked(e-> {
             if (e.getButton() == MouseButton.SECONDARY) {
-                desktopMenu.show(desktopGrid, e.getScreenX(), e.getScreenY());
+                desktopMenu.show(desktopPane, e.getScreenX(), e.getScreenY());
             }
             else desktopMenu.hide();
         });
 
-        newFolder.setOnAction(e-> {
-            int files = desktopGrid.getChildren().size();
+        newFolder.setOnAction(e -> {
+            int files = desktopPane.getChildren().size();
             int cols = 10;
-            int row = files / cols;
-            int col = files % cols;
+            int rows = 5;
+            double cellW = 80;
+            double cellH = 100;
 
-            if (row < 5) desktopGrid.add(new File("New File" + (files + 1)), col, row);
-            desktopMenu.hide();
+            int col = files % cols;
+            int row = files / cols;
+
+            if (row < rows) {
+                File file = new File("File " + (files + 1));
+                file.setLayoutX(col * cellW);
+                file.setLayoutY(row * cellH);
+                file.setOnMouseReleased(ev -> snapper.snap(file));
+                desktopPane.getChildren().add(file);
+            } else {
+                System.out.println("Desktop full");
+            }
         });
+
     }
 
 
