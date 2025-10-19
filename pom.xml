@@ -60,7 +60,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>com.xen.oslab.osgui/com.xen.oslab.osgui.HelloApplication</mainClass>
+                            <mainClass>com.xen.oslab.osgui/com.xen.oslab.OS</mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>
