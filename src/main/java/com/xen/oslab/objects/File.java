@@ -1,10 +1,10 @@
-package com.xen.oslab;
+package com.xen.oslab.objects;
 
+import com.xen.oslab.managers.LoadManager;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 
 public class File extends VBox {
@@ -13,7 +13,7 @@ public class File extends VBox {
     private double offsetY;
 
     public File(String name) {
-        LoadImages image = new LoadImages();
+        LoadManager image = new LoadManager();
 
         Image fileIcon = image.load("file.png");
         ImageView fileImage = new ImageView(fileIcon);
@@ -28,18 +28,5 @@ public class File extends VBox {
         setAlignment(Pos.CENTER);
         setSpacing(5);
         getChildren().addAll(fileImage, fileName);
-
-        setOnMousePressed(this::onMousePressed);
-        setOnMouseDragged(this::onMouseDragged);
-    }
-
-    private void onMousePressed(MouseEvent e) {
-        offsetX = e.getSceneX() - getLayoutX();
-        offsetY = e.getSceneY() - getLayoutY();
-    }
-
-    private void onMouseDragged(MouseEvent e) {
-        setLayoutX(e.getSceneX() - offsetX);
-        setLayoutY(e.getSceneY() - offsetY);
     }
 }

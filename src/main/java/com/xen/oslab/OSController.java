@@ -1,9 +1,9 @@
 package com.xen.oslab;
 
+import com.xen.oslab.managers.DesktopMenuManager;
+import com.xen.oslab.managers.FileManager;
+import com.xen.oslab.managers.GridManager;
 import javafx.fxml.FXML;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 
 public class OSController {
@@ -11,45 +11,31 @@ public class OSController {
     @FXML
     private Pane desktopPane;
 
-    private final SnapOnGrid snapper = new SnapOnGrid();
+    private final int cols = 10;
+    private final int rows = 5;
+    private final double cellW = 80;
+    private final double cellH = 100;
+    private final boolean[][] occupied = new boolean[rows][cols];
+
+    private GridManager grid;
+    private FileManager fileManager;
+    private SnapOnGrid snapper;
 
     @FXML
     public void initialize() {
-        ContextMenu desktopMenu = new ContextMenu();
-        MenuItem newFolder = new MenuItem("New Folder");
+        grid = new GridManager(rows, cols, cellW, cellH, occupied);
+        snapper = new SnapOnGrid(grid);
+        fileManager = new FileManager(desktopPane, snapper, occupied, cellW, cellH);
 
-        desktopMenu.getItems().addAll(newFolder);
-
-        desktopPane.setOnMouseClicked(e-> {
-            if (e.getButton() == MouseButton.SECONDARY) {
-                desktopMenu.show(desktopPane, e.getScreenX(), e.getScreenY());
-            }
-            else desktopMenu.hide();
-        });
-
-        newFolder.setOnAction(e -> {
-            int files = desktopPane.getChildren().size();
-            int cols = 10;
-            int rows = 5;
-            double cellW = 80;
-            double cellH = 100;
-
-            int col = files % cols;
-            int row = files / cols;
-
-            if (row < rows) {
-                File file = new File("File " + (files + 1));
-                file.setLayoutX(col * cellW);
-                file.setLayoutY(row * cellH);
-                file.setOnMouseReleased(ev -> snapper.snap(file));
-                desktopPane.getChildren().add(file);
-            } else {
-                System.out.println("Desktop full");
-            }
-        });
-
+        new DesktopMenuManager(desktopPane, this::addNewFile);
     }
 
-
-
+    private void addNewFile() {
+        int[] free = grid.findNearestFree(0, 0);
+        if (free.length == 0) {
+            System.out.println("Desktop full");
+            return;
+        }
+        fileManager.createFile("New File " + (desktopPane.getChildren().size() + 1), free[0], free[1]);
+    }
 }
