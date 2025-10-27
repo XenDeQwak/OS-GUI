@@ -2,7 +2,11 @@ package com.xen.oslab.managers;
 
 import com.xen.oslab.SnapOnGrid;
 import com.xen.oslab.objects.File;
+
+import javafx.scene.Scene;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 
 public class FileManager {
     private final Pane desktopPane;
@@ -50,10 +54,12 @@ public class FileManager {
     }
 
     private void openFile(File file) {
-        javafx.stage.Stage stage = new javafx.stage.Stage();
-        javafx.scene.control.TextArea textArea = new javafx.scene.control.TextArea("Opened: " + file.getFileName());
+        Stage stage = new Stage();
+        TextArea textArea = new TextArea();
+        textArea.setPromptText("blah blah blah");
+        Scene scene = new Scene(textArea, 500, 400);
         stage.setTitle(file.getFileName());
-        stage.setScene(new javafx.scene.Scene(textArea, 400, 300));
+        stage.setScene(scene);
         stage.show();
     }
 }
