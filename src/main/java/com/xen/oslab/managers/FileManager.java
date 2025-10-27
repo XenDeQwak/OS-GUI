@@ -40,6 +40,20 @@ public class FileManager {
 
         file.setOnMouseReleased(e -> snapper.snap(file));
 
+        file.setOnMouseClicked(e -> {
+        if (e.getClickCount() == 2) {
+            openFile(file);
+        }
+        });
+
         desktopPane.getChildren().add(file);
+    }
+
+    private void openFile(File file) {
+        javafx.stage.Stage stage = new javafx.stage.Stage();
+        javafx.scene.control.TextArea textArea = new javafx.scene.control.TextArea("Opened: " + file.getFileName());
+        stage.setTitle(file.getFileName());
+        stage.setScene(new javafx.scene.Scene(textArea, 400, 300));
+        stage.show();
     }
 }

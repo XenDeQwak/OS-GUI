@@ -9,10 +9,13 @@ import javafx.scene.layout.VBox;
 
 public class File extends VBox {
 
+    private String fileName;
     private double offsetX;
     private double offsetY;
 
     public File(String name) {
+        this.fileName = name;
+
         LoadManager image = new LoadManager();
 
         Image fileIcon = image.load("file.png");
@@ -28,5 +31,9 @@ public class File extends VBox {
         setAlignment(Pos.CENTER);
         setSpacing(5);
         getChildren().addAll(fileImage, fileName);
+    }
+
+    public String getFileName() {
+        return fileName;
     }
 }
