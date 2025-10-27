@@ -34,7 +34,7 @@ public class OSController {
         grid = new GridManager(rows, cols, cellW, cellH, occupied);
         snapper = new SnapOnGrid(grid);
         fileManager = new FileManager(desktopPane, snapper, occupied, cellW, cellH);
-        
+
         new DesktopMenuManager(desktopPane, this::addNewFile);
 
         addTaskbar();
@@ -44,7 +44,7 @@ public class OSController {
         HBox taskbar = new HBox();
         taskbar.setPrefHeight(40);
         taskbar.setStyle("-fx-background-color: rgba(30,30,30,0.8);");
-        taskbar.setAlignment(Pos.CENTER_RIGHT);
+        taskbar.setAlignment(Pos.CENTER_LEFT);
         taskbar.setPadding(new Insets(0, 15, 0, 15));
 
         ImageView powerIcon = new ImageView(
