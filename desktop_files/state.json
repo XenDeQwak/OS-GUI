@@ -13,8 +13,14 @@
   },
   {
     "name": "New File 3",
-    "x": 160.0,
+    "x": 400.0,
     "y": 300.0,
     "content": "Hello\n"
+  },
+  {
+    "name": "New File 4",
+    "x": 0.0,
+    "y": 100.0,
+    "content": ""
   }
 ]

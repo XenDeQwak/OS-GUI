@@ -1,8 +1,10 @@
 package com.xen.oslab.managers;
 
-import com.xen.oslab.FileEditor;
 import com.xen.oslab.SnapOnGrid;
+import com.xen.oslab.modules.FileEditor;
 import com.xen.oslab.objects.File;
+
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 
 public class FileManager {
@@ -63,6 +65,13 @@ public class FileManager {
         file.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
                 FileEditor.open(file, () -> storage.saveAll(desktopPane));
+            }
+        });
+
+        file.setOnMouseClicked(e-> {
+            if (e.getButton() == MouseButton.SECONDARY) {
+                //function for name change
+                //DesktopMenuManager.fileMenu(file)
             }
         });
 

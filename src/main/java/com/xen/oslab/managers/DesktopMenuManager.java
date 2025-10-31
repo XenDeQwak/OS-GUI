@@ -5,13 +5,17 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 
+import java.util.Map;
+
 public class DesktopMenuManager {
     private final ContextMenu menu = new ContextMenu();
 
-    public DesktopMenuManager(Pane desktopPane, Runnable onNewFile) {
-        MenuItem newFile = new MenuItem("New File");
-        newFile.setOnAction(e -> onNewFile.run());
-        menu.getItems().add(newFile);
+    public DesktopMenuManager(Pane desktopPane, Map<String, Runnable> actions) {
+        actions.forEach((label, action) -> {
+            MenuItem item = new MenuItem(label);
+            item.setOnAction(e -> action.run());
+            menu.getItems().add(item);
+        });
 
         desktopPane.setOnMouseClicked(e -> {
             if (e.getButton() == MouseButton.SECONDARY)

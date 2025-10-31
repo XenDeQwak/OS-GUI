@@ -1,4 +1,4 @@
-package com.xen.oslab;
+package com.xen.oslab.modules;
 
 import com.xen.oslab.objects.File;
 
