@@ -2,16 +2,19 @@
   {
     "name": "New File 2",
     "x": 320.0,
-    "y": 200.0
+    "y": 200.0,
+    "content": ""
   },
   {
     "name": "New File 1",
     "x": 400.0,
-    "y": 200.0
+    "y": 200.0,
+    "content": "this is a test"
   },
   {
     "name": "New File 3",
-    "x": 320.0,
-    "y": 100.0
+    "x": 160.0,
+    "y": 300.0,
+    "content": "Hello\n"
   }
 ]

@@ -6,7 +6,6 @@ import javafx.scene.layout.Pane;
 
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.stream.Collectors;
 
 public class FileStorageManager {
     private final Path savePath = Paths.get("desktop_files/state.json");
@@ -30,6 +29,7 @@ public class FileStorageManager {
                     obj.addProperty("name", f.getFileName());
                     obj.addProperty("x", f.getLayoutX());
                     obj.addProperty("y", f.getLayoutY());
+                    obj.addProperty("content", f.getContent());
                     return obj;
                 })
                 .collect(JsonArray::new, JsonArray::add, JsonArray::addAll);
@@ -52,7 +52,8 @@ public class FileStorageManager {
                 String name = obj.get("name").getAsString();
                 double x = obj.get("x").getAsDouble();
                 double y = obj.get("y").getAsDouble();
-                fileManager.createFileAt(name, x, y);
+                String txt = obj.has("content") ? obj.get("content").getAsString() : "";
+                fileManager.createFileAt(name, x, y, txt);
             }
         } catch (IOException e) {
             e.printStackTrace();
