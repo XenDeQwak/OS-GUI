@@ -1,6 +1,7 @@
 module com.xen.oslab.osgui {
     requires javafx.controls;
     requires javafx.fxml;
+    requires com.google.gson;
 
 
     opens com.xen.oslab to javafx.fxml;

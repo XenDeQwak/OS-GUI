@@ -14,6 +14,7 @@ public class FileManager {
     private final double cellW;
     private final double cellH;
     private final boolean[][] occupied;
+    private final FileStorageManager storage;
 
     public FileManager(Pane desktopPane, SnapOnGrid snapper, boolean[][] occupied, double cellW, double cellH) {
         this.desktopPane = desktopPane;
@@ -21,6 +22,7 @@ public class FileManager {
         this.occupied = occupied;
         this.cellW = cellW;
         this.cellH = cellH;
+        this.storage = new FileStorageManager();
     }
 
     public void createFile(String name, int row, int col) {
@@ -29,27 +31,7 @@ public class FileManager {
         file.setLayoutY(row * cellH);
         file.setUserData(new int[]{row, col});
         occupied[row][col] = true;
-
-        file.setOnMousePressed(e -> {
-            int[] pos = (int[]) file.getUserData();
-            if (pos != null) occupied[pos[0]][pos[1]] = false;
-            file.setUserData(null);
-            file.toFront();
-        });
-
-        file.setOnMouseDragged(e -> {
-            file.setLayoutX(e.getSceneX() - file.getWidth() / 2);
-            file.setLayoutY(e.getSceneY() - file.getHeight() / 2);
-        });
-
-        file.setOnMouseReleased(e -> snapper.snap(file));
-
-        file.setOnMouseClicked(e -> {
-        if (e.getClickCount() == 2) {
-            openFile(file);
-        }
-        });
-
+        attachEvents(file);
         desktopPane.getChildren().add(file);
     }
 
@@ -62,4 +44,38 @@ public class FileManager {
         stage.setScene(scene);
         stage.show();
     }
+
+    public void createFileAt(String name, double x, double y) {
+        File file = new File(name);
+        file.setLayoutX(x);
+        file.setLayoutY(y);
+        attachEvents(file);
+        desktopPane.getChildren().add(file);
+    }
+
+    public FileStorageManager getStorage() {
+        return storage;
+    }
+
+    private void attachEvents(File file) {
+    file.setOnMousePressed(e -> {
+        int[] pos = (int[]) file.getUserData();
+        if (pos != null) occupied[pos[0]][pos[1]] = false;
+        file.setUserData(null);
+        file.toFront();
+    });
+
+    file.setOnMouseDragged(e -> {
+        file.setLayoutX(e.getSceneX() - file.getWidth() / 2);
+        file.setLayoutY(e.getSceneY() - file.getHeight() / 2);
+    });
+
+    file.setOnMouseReleased(e -> snapper.snap(file));
+    file.setOnMouseClicked(e -> {
+        if (e.getClickCount() == 2) {
+            openFile(file);
+        }
+        });
+    }
+
 }

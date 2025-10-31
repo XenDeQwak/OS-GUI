@@ -8,10 +8,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
 public class File extends VBox {
-
     private String fileName;
-    private double offsetX;
-    private double offsetY;
+    private String content = "";
+    private String filePath;
+    private int row = -1;
+    private int col = -1;
 
     public File(String name) {
         this.fileName = name;
@@ -23,17 +24,29 @@ public class File extends VBox {
         fileImage.setFitWidth(48);
         fileImage.setFitHeight(48);
 
-        Label fileName = new Label(name);
-        fileName.setAlignment(Pos.CENTER);
-        fileName.setWrapText(true);
-        fileName.setMaxWidth(80);
+        Label label = new Label(name);
+        label.setAlignment(Pos.CENTER);
+        label.setWrapText(true);
+        label.setMaxWidth(80);
 
         setAlignment(Pos.CENTER);
         setSpacing(5);
-        getChildren().addAll(fileImage, fileName);
+        getChildren().addAll(fileImage, label);
     }
 
-    public String getFileName() {
-        return fileName;
+    public String getFileName() { return fileName; }
+
+    public String getContent() { return content; }
+    public void setContent(String content) { this.content = content; }
+
+    public String getFilePath() { return filePath; }
+    public void setFilePath(String filePath) { this.filePath = filePath; }
+
+    public int getRow() { return row; }
+    public int getCol() { return col; }
+    
+    public void setPosition(int row, int col) {
+        this.row = row;
+        this.col = col;
     }
 }
