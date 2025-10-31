@@ -3,6 +3,8 @@ package com.xen.oslab;
 import java.util.Map;
 
 import com.xen.oslab.managers.*;
+import com.xen.oslab.managers.storage.FileStorageManager;
+import com.xen.oslab.managers.storage.FolderStorageManager;
 import com.xen.oslab.objects.File;
 import com.xen.oslab.objects.Folder;
 
@@ -16,7 +18,8 @@ public class OSController {
     private GridManager grid;
     private FileManager fileManager;
     private SnapOnGrid snapper;
-    private FileStorageManager storageManager;
+    private FileStorageManager fileStorage;
+    private FolderStorageManager folderStorage;
     private FolderManager folderManager;
 
     private final int cols = 10;
@@ -31,13 +34,15 @@ public class OSController {
         snapper = new SnapOnGrid(grid);
         fileManager = new FileManager(desktopPane, snapper, occupied, cellW, cellH);
         folderManager = new FolderManager(desktopPane, snapper, occupied, cellW, cellH);
-        storageManager = new FileStorageManager();
+        fileStorage = new FileStorageManager();
+        folderStorage = new FolderStorageManager();
 
         new DesktopMenuManager(desktopPane, Map.of(
             "New File", this::addNewFile,
             "New Folder", this::addNewFolder
         ));
-        storageManager.loadAll(desktopPane, fileManager);
+        fileStorage.loadAll(desktopPane, fileManager);
+        folderStorage.loadAll(desktopPane);
     }
 
     private int getNextFileNumber() {
@@ -68,8 +73,8 @@ public class OSController {
         folderManager.createFolder("New Folder " + num, free[0], free[1]);
     }
 
-
+    //temporary call to autosave on exit. remove in the future
     public void saveState() {
-        storageManager.saveAll(desktopPane);
+        fileStorage.saveAll(desktopPane);
     }
 }

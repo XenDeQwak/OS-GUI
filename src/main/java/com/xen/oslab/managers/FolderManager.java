@@ -1,6 +1,7 @@
 package com.xen.oslab.managers;
 
 import com.xen.oslab.SnapOnGrid;
+import com.xen.oslab.managers.storage.FileStorageManager;
 import com.xen.oslab.modules.FolderWindow;
 import com.xen.oslab.objects.Folder;
 import javafx.scene.layout.Pane;

@@ -1,10 +1,12 @@
 package com.xen.oslab.managers;
 
 import com.xen.oslab.SnapOnGrid;
+import com.xen.oslab.managers.storage.FileStorageManager;
 import com.xen.oslab.modules.FileEditor;
 import com.xen.oslab.objects.File;
+import com.xen.oslab.objects.Folder;
 
-import javafx.scene.input.MouseButton;
+import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 
 public class FileManager {
@@ -60,7 +62,6 @@ public class FileManager {
             file.setLayoutY(e.getSceneY() - file.getHeight() / 2);
         });
 
-        file.setOnMouseReleased(e -> snapper.snap(file));
 
         file.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
@@ -68,12 +69,31 @@ public class FileManager {
             }
         });
 
-        file.setOnMouseClicked(e-> {
-            if (e.getButton() == MouseButton.SECONDARY) {
-                //function for name change
-                //DesktopMenuManager.fileMenu(file)
+        file.setOnMouseReleased(e -> {
+            boolean insideFolder = false;
+
+            for (Node node : desktopPane.getChildren()) {
+                if (node instanceof Folder folder) {
+                    if (file.getBoundsInParent().intersects(folder.getBoundsInParent())) {
+                        folder.addFile(file);
+                        desktopPane.getChildren().remove(file);
+                        folder.getStorage().saveFolder(folder);
+                        insideFolder = true;
+                        break;
+                    }
+                }
             }
+
+            if (!insideFolder) snapper.snap(file);
         });
+
+
+        // file.setOnMouseClicked(e-> {
+        //     if (e.getButton() == MouseButton.SECONDARY) {
+        //         //function for name change
+        //         //DesktopMenuManager.fileMenu(file)
+        //     }
+        // });
 
     }
 }
