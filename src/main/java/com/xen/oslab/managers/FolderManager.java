@@ -12,13 +12,15 @@ public class FolderManager {
     private final boolean[][] occupied;
     private final double cellW, cellH;
     private final FileStorageManager storage;
+    private final FileManager fileManager;
 
-    public FolderManager(Pane desktopPane, SnapOnGrid snapper, boolean[][] occupied, double cellW, double cellH) {
+    public FolderManager(Pane desktopPane, SnapOnGrid snapper, boolean[][] occupied, double cellW, double cellH, FileManager fileManager) {
         this.desktopPane = desktopPane;
         this.snapper = snapper;
         this.occupied = occupied;
         this.cellW = cellW;
         this.cellH = cellH;
+        this.fileManager = fileManager;
         this.storage = new FileStorageManager();
     }
 
@@ -33,6 +35,15 @@ public class FolderManager {
 
         attachEvents(folder);
         desktopPane.getChildren().add(folder);
+    }
+
+    public Folder createFolderAt(String name, double x, double y) {
+        Folder folder = new Folder(name);
+        folder.setLayoutX(x);
+        folder.setLayoutY(y);
+        attachEvents(folder);
+        desktopPane.getChildren().add(folder);
+        return folder;
     }
 
     private void attachEvents(Folder folder) {
@@ -52,7 +63,7 @@ public class FolderManager {
 
         folder.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
-                new FolderWindow(folder);
+                new FolderWindow(folder, fileManager);
             }
         });
     }

@@ -1,5 +1,6 @@
 package com.xen.oslab.modules;
 
+import com.xen.oslab.managers.FileManager;
 import com.xen.oslab.objects.File;
 import com.xen.oslab.objects.Folder;
 import javafx.scene.Scene;
@@ -9,14 +10,20 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class FolderWindow {
-    private final Folder folder;
-    private final FlowPane contentPane = new FlowPane(20, 20);
+    public FolderWindow(Folder folder, FileManager fileManager) {
+        FlowPane contentPane = new FlowPane(20, 20);
 
-    public FolderWindow(Folder folder) {
-        this.folder = folder;
-
-        for (File f : folder.getFiles())
-            contentPane.getChildren().add(f);
+        for (File dataFile : folder.getFiles()) {
+            File fileNode = new File(dataFile.getFileName());
+            fileNode.setContent(dataFile.getContent());
+            fileNode.setLayoutX(dataFile.getLayoutX());
+            fileNode.setLayoutY(dataFile.getLayoutY());
+            fileManager.attachEvents(fileNode);
+            
+            fileNode.setOnMousePressed(event -> event.consume());
+            
+            contentPane.getChildren().add(fileNode);
+        }
 
         ScrollPane scroll = new ScrollPane(contentPane);
         scroll.setFitToWidth(true);
@@ -28,8 +35,6 @@ public class FolderWindow {
         stage.show();
     }
 
-    public void addFile(File file) {
-        folder.addFile(file);
-        contentPane.getChildren().add(file);
-    }
 }
+
+

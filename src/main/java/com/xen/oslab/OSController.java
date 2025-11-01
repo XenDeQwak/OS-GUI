@@ -33,7 +33,7 @@ public class OSController {
         grid = new GridManager(rows, cols, cellW, cellH, occupied);
         snapper = new SnapOnGrid(grid);
         fileManager = new FileManager(desktopPane, snapper, occupied, cellW, cellH);
-        folderManager = new FolderManager(desktopPane, snapper, occupied, cellW, cellH);
+        folderManager = new FolderManager(desktopPane, snapper, occupied, cellW, cellH, fileManager);
         fileStorage = new FileStorageManager();
         folderStorage = new FolderStorageManager();
 
@@ -42,7 +42,7 @@ public class OSController {
             "New Folder", this::addNewFolder
         ));
         fileStorage.loadAll(desktopPane, fileManager);
-        folderStorage.loadAll(desktopPane);
+        folderStorage.loadAll(desktopPane, folderManager);
     }
 
     private int getNextFileNumber() {

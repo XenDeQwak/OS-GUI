@@ -49,7 +49,7 @@ public class FileManager {
         return storage;
     }
 
-    private void attachEvents(File file) {
+    public void attachEvents(File file) {
         file.setOnMousePressed(e -> {
             int[] pos = (int[]) file.getUserData();
             if (pos != null) occupied[pos[0]][pos[1]] = false;

@@ -1,6 +1,8 @@
 package com.xen.oslab.managers.storage;
 
 import com.google.gson.*;
+import com.xen.oslab.managers.FileManager;
+import com.xen.oslab.managers.FolderManager;
 import com.xen.oslab.objects.File;
 import com.xen.oslab.objects.Folder;
 import javafx.scene.layout.Pane;
@@ -26,10 +28,12 @@ public class FolderStorageManager extends DesktopStorageManager {
         JsonObject folderObj = new JsonObject();
         folderObj.addProperty("name", folder.getFolderName());
         folderObj.add("files", filesArray);
+        folderObj.addProperty("x", folder.getLayoutX());
+        folderObj.addProperty("y", folder.getLayoutY());
         write(path, gson.toJson(folderObj));
     }
 
-    public void loadFolder(Folder folder, Pane folderPane) {
+    public void loadFolder(Folder folder) {
         Path path = baseDir.resolve(folder.getFolderName() + ".json");
         if (!Files.exists(path)) return;
 
@@ -37,23 +41,18 @@ public class FolderStorageManager extends DesktopStorageManager {
         JsonObject folderObj = JsonParser.parseString(content).getAsJsonObject();
         JsonArray filesArray = folderObj.getAsJsonArray("files");
 
-        filesArray.forEach(e -> {
+        for (JsonElement e : filesArray) {
             JsonObject fileObj = e.getAsJsonObject();
-            String name = fileObj.get("name").getAsString();
-            double x = fileObj.get("x").getAsDouble();
-            double y = fileObj.get("y").getAsDouble();
-            String text = fileObj.get("content").getAsString();
-
-            File file = new File(name);
-            file.setLayoutX(x);
-            file.setLayoutY(y);
-            file.setContent(text);
-            folder.addFile(file);
-            folderPane.getChildren().add(file);
-        });
+            File fileData = new File(fileObj.get("name").getAsString());
+            fileData.setContent(fileObj.get("content").getAsString());
+            fileData.setLayoutX(fileObj.get("x").getAsDouble());
+            fileData.setLayoutY(fileObj.get("y").getAsDouble());
+            folder.addFile(fileData);
+        }
     }
 
-        public void loadAll(Pane desktopPane) {
+
+    public void loadAll(Pane desktopPane, FolderManager folderManager) {
         try (Stream<Path> paths = Files.list(baseDir)) {
             paths.filter(p -> p.toString().endsWith(".json")).forEach(path -> {
                 try {
@@ -65,10 +64,12 @@ public class FolderStorageManager extends DesktopStorageManager {
                     if (!folderObj.has("name") || !folderObj.has("files")) return;
 
                     String folderName = folderObj.get("name").getAsString();
+                    double x = folderObj.get("x").getAsDouble();
+                    double y = folderObj.get("y").getAsDouble();
 
-                    Folder folder = new Folder(folderName);
+                    Folder folder = folderManager.createFolderAt(folderName, x, y);
+                    loadFolder(folder);
 
-                    loadFolder(folder, new Pane());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -77,5 +78,6 @@ public class FolderStorageManager extends DesktopStorageManager {
             e.printStackTrace();
         }
     }
+
 
 }
