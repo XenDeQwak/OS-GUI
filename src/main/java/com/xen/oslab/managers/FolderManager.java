@@ -2,6 +2,7 @@ package com.xen.oslab.managers;
 
 import com.xen.oslab.SnapOnGrid;
 import com.xen.oslab.managers.storage.FileStorageManager;
+import com.xen.oslab.managers.storage.FolderStorageManager;
 import com.xen.oslab.modules.FolderWindow;
 import com.xen.oslab.objects.Folder;
 import javafx.scene.layout.Pane;
@@ -11,7 +12,6 @@ public class FolderManager {
     private final SnapOnGrid snapper;
     private final boolean[][] occupied;
     private final double cellW, cellH;
-    private final FileStorageManager storage;
     private final FileManager fileManager;
 
     public FolderManager(Pane desktopPane, SnapOnGrid snapper, boolean[][] occupied, double cellW, double cellH, FileManager fileManager) {
@@ -21,7 +21,6 @@ public class FolderManager {
         this.cellW = cellW;
         this.cellH = cellH;
         this.fileManager = fileManager;
-        this.storage = new FileStorageManager();
     }
 
     public void createFolder(String name, int row, int col) {
@@ -59,7 +58,28 @@ public class FolderManager {
             folder.setLayoutY(e.getSceneY() - folder.getHeight() / 2);
         });
 
-        folder.setOnMouseReleased(e -> snapper.snap(folder));
+        folder.setOnMouseReleased(e -> {
+            Folder target = null;
+            for (var node : desktopPane.getChildren()) {
+                if (node instanceof Folder f && f != folder) {
+                    if (f.getBoundsInParent().intersects(folder.getBoundsInParent())) {
+                        target = f;
+                        break;
+                    }
+                }
+            }
+
+            if (target != null) {
+                target.addFolder(folder);
+                FolderStorageManager fsm = new FolderStorageManager();
+                fsm.storeInFolder(target.getFolderName(), folder.getFolderName());
+                fsm.saveFolder(target);
+                desktopPane.getChildren().remove(folder);
+            } else {
+                snapper.snap(folder);
+            }
+        });
+
 
         folder.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
@@ -67,4 +87,5 @@ public class FolderManager {
             }
         });
     }
+
 }
