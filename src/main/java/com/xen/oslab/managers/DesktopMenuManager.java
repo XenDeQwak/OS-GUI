@@ -4,6 +4,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
+import javafx.stage.Window;
 
 import java.util.Map;
 
@@ -23,4 +24,6 @@ public class DesktopMenuManager {
             else menu.hide();
         });
     }
+
+    public ContextMenu getMenu() { return menu; }
 }

@@ -2,6 +2,7 @@ package com.xen.oslab.managers;
 
 import com.xen.oslab.SnapOnGrid;
 import com.xen.oslab.managers.storage.FileStorageManager;
+import com.xen.oslab.managers.storage.FolderStorageManager;
 import com.xen.oslab.modules.FileEditor;
 import com.xen.oslab.objects.File;
 import com.xen.oslab.objects.Folder;
@@ -44,6 +45,19 @@ public class FileManager {
         attachEvents(file);
         desktopPane.getChildren().add(file);
     }
+    
+    public File createFileInFolder(Folder folder, Pane targetPane, String name, double x, double y) {
+        File file = new File(name);
+        file.setLayoutX(x);
+        file.setLayoutY(y);
+        file.setContent("");
+        attachEvents(file);
+        folder.addFile(file);
+        targetPane.getChildren().add(file);
+        new FolderStorageManager().saveFolder(folder);
+        return file;
+    }
+
 
     public FileStorageManager getStorage() {
         return storage;

@@ -41,6 +41,7 @@ public class OSController {
             "New File", this::addNewFile,
             "New Folder", this::addNewFolder
         ));
+        
         fileStorage.loadAll(desktopPane, fileManager);
         folderStorage.loadAll(desktopPane, folderManager);
     }
