@@ -15,6 +15,7 @@ public class OS extends Application {
         OSController controller = fxmlLoader.getController();
         stage.setTitle("OS GUI!");
         stage.setScene(scene);
+        stage.setMaximized(true);
         stage.show();
         stage.setOnCloseRequest(e -> controller.saveState());
     }

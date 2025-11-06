@@ -6,6 +6,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
 public class File extends VBox {
     private String fileName;
@@ -19,7 +20,7 @@ public class File extends VBox {
 
         LoadManager image = new LoadManager();
 
-        Image fileIcon = image.load("file.png");
+        Image fileIcon = image.load("File.png");
         ImageView fileImage = new ImageView(fileIcon);
         fileImage.setFitWidth(48);
         fileImage.setFitHeight(48);
@@ -28,6 +29,7 @@ public class File extends VBox {
         label.setAlignment(Pos.CENTER);
         label.setWrapText(true);
         label.setMaxWidth(80);
+        label.setTextFill(Color.WHITE);
 
         setAlignment(Pos.CENTER);
         setSpacing(5);

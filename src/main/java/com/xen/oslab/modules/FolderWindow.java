@@ -41,12 +41,12 @@ public class FolderWindow {
         ScrollPane scroll = new ScrollPane(contentPane);
         scroll.setFitToWidth(true);
 
+
         Stage stage = new Stage();
         stage.setTitle(folder.getFolderName());
         stage.initModality(Modality.NONE);
         stage.setScene(new Scene(scroll, 500, 400));
         stage.show();
 
-        
     }
 }

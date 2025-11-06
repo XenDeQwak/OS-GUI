@@ -9,7 +9,8 @@ import com.xen.oslab.objects.File;
 import com.xen.oslab.objects.Folder;
 
 import javafx.fxml.FXML;
-import javafx.scene.layout.Pane;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
 
 public class OSController {
     @FXML
@@ -30,6 +31,7 @@ public class OSController {
 
     @FXML
     public void initialize() {
+
         grid = new GridManager(rows, cols, cellW, cellH, occupied);
         snapper = new SnapOnGrid(grid);
         fileManager = new FileManager(desktopPane, snapper, occupied, cellW, cellH);

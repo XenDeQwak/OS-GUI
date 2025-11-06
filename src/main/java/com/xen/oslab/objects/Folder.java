@@ -11,6 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
 public class Folder extends VBox {
     private String folderName;
@@ -23,14 +24,16 @@ public class Folder extends VBox {
         this.storage = new FolderStorageManager();
 
         LoadManager image = new LoadManager();
-        Image folderIcon = image.load("folder.png");
+        Image folderIcon = image.load("Folder.png");
         ImageView folderImage = new ImageView(folderIcon);
         folderImage.setFitWidth(48);
-        folderImage.setFitHeight(48);
+        folderImage.setFitHeight(50);
+
         Label label = new Label(name);
         label.setAlignment(Pos.CENTER);
         label.setWrapText(true);
         label.setMaxWidth(80);
+        label.setTextFill(Color.WHITE);
 
         setAlignment(Pos.CENTER);
         setSpacing(5);
