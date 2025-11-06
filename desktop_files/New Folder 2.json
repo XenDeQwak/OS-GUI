@@ -18,6 +18,24 @@
       "x": 75.2,
       "y": 0.0,
       "content": ""
+    },
+    {
+      "name": "yes",
+      "x": 144.8,
+      "y": 70.4,
+      "content": "hello :)"
+    },
+    {
+      "name": "New File 1",
+      "x": 0.0,
+      "y": 0.0,
+      "content": ""
+    },
+    {
+      "name": "New File 2",
+      "x": 0.0,
+      "y": 100.0,
+      "content": ""
     }
   ],
   "subfolders": [

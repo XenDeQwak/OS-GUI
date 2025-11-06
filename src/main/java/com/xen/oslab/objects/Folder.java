@@ -7,7 +7,10 @@ import com.xen.oslab.managers.LoadManager;
 import com.xen.oslab.managers.storage.FolderStorageManager;
 
 import javafx.geometry.Pos;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
@@ -18,26 +21,67 @@ public class Folder extends VBox {
     private final List<File> files = new ArrayList<>();
     private final List<Folder> subFolders = new ArrayList<>();
     private final FolderStorageManager storage;
+    private TextField renameFolder;
+    private Label label;
 
     public Folder(String name) {
         this.folderName = name;
         this.storage = new FolderStorageManager();
 
         LoadManager image = new LoadManager();
+
         Image folderIcon = image.load("Folder.png");
         ImageView folderImage = new ImageView(folderIcon);
         folderImage.setFitWidth(48);
         folderImage.setFitHeight(50);
 
-        Label label = new Label(name);
+        label = new Label(name);
         label.setAlignment(Pos.CENTER);
         label.setWrapText(true);
         label.setMaxWidth(80);
         label.setTextFill(Color.WHITE);
 
+
+        renameFolder = new TextField(folderName);
+        renameFolder.setAlignment(Pos.CENTER);
+        renameFolder.setMaxWidth(80);
+        renameFolder.setVisible(false);
+        getChildren().addAll(folderImage, label, renameFolder);
+
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem renameItem = new MenuItem("Rename Folder");
+        renameItem.setOnAction(e -> startRename());
+        contextMenu.getItems().add(renameItem);
+        label.setOnContextMenuRequested(e -> {
+            contextMenu.show(label, e.getScreenX(), e.getScreenY());
+            e.consume();
+        });
+
+        renameFolder.setOnAction(e -> finishRename());
+        renameFolder.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+            if (!isNowFocused) finishRename();
+        });
+
         setAlignment(Pos.CENTER);
         setSpacing(5);
-        getChildren().addAll(folderImage, label);
+    }
+    private void startRename(){
+        renameFolder.setText(folderName);
+        label.setVisible(false);
+        renameFolder.setVisible(true);
+        renameFolder.requestFocus();
+        renameFolder.selectAll();
+    }
+
+    private void finishRename() {
+        String newName = renameFolder.getText().trim();
+        if (!newName.isEmpty()) {
+            folderName = newName;
+            label.setText(newName);
+
+        }
+        renameFolder.setVisible(false);
+        label.setVisible(true);
     }
 
     public void addFile(File f) {
@@ -64,3 +108,4 @@ public class Folder extends VBox {
         return folderName;
     }
 }
+

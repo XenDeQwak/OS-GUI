@@ -18,8 +18,11 @@ public class DesktopMenuManager {
         });
 
         desktopPane.setOnMouseClicked(e -> {
-            if (e.getButton() == MouseButton.SECONDARY)
-                menu.show(desktopPane, e.getScreenX(), e.getScreenY());
+            if (e.getButton() == MouseButton.SECONDARY) {
+                if (e.getTarget() == desktopPane) {
+                    menu.show(desktopPane, e.getScreenX(), e.getScreenY());
+                }
+            }
             else menu.hide();
         });
     }
