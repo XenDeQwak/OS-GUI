@@ -9,14 +9,19 @@ import com.xen.oslab.objects.File;
 import com.xen.oslab.objects.Folder;
 import com.xen.oslab.utils.SnapOnGrid;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 
 public class OSController {
     @FXML
     private Pane desktopPane;
+    @FXML
+    private HBox taskbar;
 
     private GridManager grid;
     private FileManager fileManager;
@@ -64,6 +69,7 @@ public class OSController {
         desktopPane.widthProperty().addListener((obs, oldV, newV) -> applySavedBackground());
         desktopPane.heightProperty().addListener((obs, oldV, newV) -> applySavedBackground());
         applySavedBackground();
+        addPowerButton();
     }
 
     private void applySavedBackground() {
@@ -109,5 +115,19 @@ public class OSController {
         if (free.length == 0) return;
         int num = getNextFolderNumber();
         folderManager.createFolder("New Folder " + num, free[0], free[1]);
+    }
+
+    private void addPowerButton() {
+        if (taskbar == null) return;
+        Image icon = new Image(getClass().getResource("/com/xen/oslab/icons/power.png").toExternalForm());
+        ImageView iconView = new ImageView(icon);
+        iconView.setFitWidth(24);
+        iconView.setFitHeight(24);
+        Button powerBtn = new Button();
+        powerBtn.setGraphic(iconView);
+        powerBtn.setStyle("-fx-background-color: transparent;");
+        powerBtn.setOnAction(e -> System.exit(0));
+        taskbar.getChildren().add(powerBtn);
+        taskbar.setAlignment(Pos.CENTER_LEFT);
     }
 }
