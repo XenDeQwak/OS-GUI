@@ -14,7 +14,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
 public class File extends VBox {
-    private final String id = UUID.randomUUID().toString();
+    private final String fileId = UUID.randomUUID().toString();
     private String fileName;
     private String content = "";
     private String filePath;
@@ -97,5 +97,11 @@ public class File extends VBox {
         this.row = row;
         this.col = col;
     }
+
+    public String getFileId() {
+        return fileId;
+    }
+
+    
 }
 

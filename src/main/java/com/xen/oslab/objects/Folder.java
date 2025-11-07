@@ -2,6 +2,7 @@ package com.xen.oslab.objects;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import com.xen.oslab.managers.LoadManager;
 import com.xen.oslab.managers.storage.FolderStorageManager;
@@ -15,6 +16,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
 public class Folder extends VBox {
+    private String folderId = UUID.randomUUID().toString();
     private String folderName;
     private final List<File> files = new ArrayList<>();
     private final List<Folder> subFolders = new ArrayList<>();
@@ -101,6 +103,20 @@ public class Folder extends VBox {
         return folderName;
     }
 
+    
+
     public Folder getParentFolder() { return parentFolder; }
     public void setParentFolder(Folder parent) { this.parentFolder = parent; }
+
+    public String getFolderId() {
+        return folderId;
+    }
+
+    public void setFolderId(String folderId) {
+        this.folderId = folderId;
+    }
+
+    public void setFolderName(String folderName) {
+        this.folderName = folderName;
+    }
 }

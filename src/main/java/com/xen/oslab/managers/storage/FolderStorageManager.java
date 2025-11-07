@@ -4,25 +4,30 @@ import com.google.gson.*;
 import com.xen.oslab.managers.FolderManager;
 import com.xen.oslab.objects.File;
 import com.xen.oslab.objects.Folder;
-import javafx.scene.layout.Pane;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.stream.Stream;
 
 public class FolderStorageManager extends DesktopStorageManager {
 
-    public void saveFolder(Folder folder, boolean isTopLevel) {
-        if (!isTopLevel) return;
+    private boolean isLoading = false;
 
-        Path path = baseDir.resolve(folder.getFolderName() + ".json");
+    public void saveFolder(Folder folder, boolean isTopLevel) {
+        if (isLoading || !isTopLevel) return;
+        Path path = baseDir.resolve(folder.getFolderId() + ".json");
         JsonObject folderObj = buildFolderJson(folder);
         write(path, gson.toJson(folderObj));
     }
 
     private JsonObject buildFolderJson(Folder folder) {
-        JsonArray filesArray = new JsonArray();
-        JsonArray subFoldersArray = new JsonArray();
+        JsonObject folderObj = new JsonObject();
+        folderObj.addProperty("name", folder.getFolderName());
+        folderObj.addProperty("folderId", folder.getFolderId());
+        folderObj.addProperty("parentId", folder.getParentFolder() != null ? folder.getParentFolder().getFolderId() : null);
+        folderObj.addProperty("x", folder.getLayoutX());
+        folderObj.addProperty("y", folder.getLayoutY());
 
+        JsonArray filesArray = new JsonArray();
         for (File f : folder.getFiles()) {
             JsonObject fileObj = new JsonObject();
             fileObj.addProperty("name", f.getFileName());
@@ -31,26 +36,19 @@ public class FolderStorageManager extends DesktopStorageManager {
             fileObj.addProperty("content", f.getContent());
             filesArray.add(fileObj);
         }
-
-        for (Folder subFolder : folder.getSubFolders()) {
-            JsonObject subFolderObj = new JsonObject();
-            subFolderObj.addProperty("name", subFolder.getFolderName());
-            subFolderObj.add("files", buildFilesArray(subFolder));
-            subFolderObj.add("subfolders", buildSubfoldersArray(subFolder));
-            subFoldersArray.add(subFolderObj);
-        }
-
-        JsonObject folderObj = new JsonObject();
-        folderObj.addProperty("name", folder.getFolderName());
         folderObj.add("files", filesArray);
+
+        JsonArray subFoldersArray = new JsonArray();
+        for (Folder subFolder : folder.getSubFolders()) {
+            subFoldersArray.add(buildFolderJson(subFolder));
+        }
         folderObj.add("subfolders", subFoldersArray);
-        folderObj.addProperty("x", folder.getLayoutX());
-        folderObj.addProperty("y", folder.getLayoutY());
+
         return folderObj;
     }
 
     public void loadFolder(Folder folder) {
-        Path path = baseDir.resolve(folder.getFolderName() + ".json");
+        Path path = baseDir.resolve(folder.getFolderId() + ".json");
         if (!Files.exists(path)) return;
 
         folder.getFiles().clear();
@@ -58,6 +56,14 @@ public class FolderStorageManager extends DesktopStorageManager {
 
         String content = read(path);
         JsonObject folderObj = JsonParser.parseString(content).getAsJsonObject();
+        loadFolderData(folder, folderObj);
+    }
+
+    private void loadFolderData(Folder folder, JsonObject folderObj) {
+        folder.setFolderName(folderObj.get("name").getAsString());
+        folder.setLayoutX(folderObj.get("x").getAsDouble());
+        folder.setLayoutY(folderObj.get("y").getAsDouble());
+
         JsonArray filesArray = folderObj.getAsJsonArray("files");
         JsonArray subFoldersArray = folderObj.getAsJsonArray("subfolders");
 
@@ -74,42 +80,16 @@ public class FolderStorageManager extends DesktopStorageManager {
             JsonObject subFolderObj = e.getAsJsonObject();
             Folder subFolder = new Folder(subFolderObj.get("name").getAsString());
             subFolder.setParentFolder(folder);
-            loadFolderRecursive(subFolder, subFolderObj);
+            subFolder.setFolderId(subFolderObj.get("folderId").getAsString());
+            loadFolderData(subFolder, subFolderObj);
             folder.addFolder(subFolder);
         }
     }
 
-    private JsonArray buildFilesArray(Folder folder) {
-        JsonArray filesArray = new JsonArray();
-        for (File f : folder.getFiles()) {
-            JsonObject fileObj = new JsonObject();
-            fileObj.addProperty("name", f.getFileName());
-            fileObj.addProperty("x", f.getLayoutX());
-            fileObj.addProperty("y", f.getLayoutY());
-            fileObj.addProperty("content", f.getContent());
-            filesArray.add(fileObj);
-        }
-        return filesArray;
-    }
-
-    private JsonArray buildSubfoldersArray(Folder folder) {
-        JsonArray array = new JsonArray();
-        for (Folder subFolder : folder.getSubFolders()) {
-            JsonObject obj = new JsonObject();
-            obj.addProperty("name", subFolder.getFolderName());
-            obj.add("files", buildFilesArray(subFolder));
-            obj.add("subfolders", buildSubfoldersArray(subFolder));
-            array.add(obj);
-        }
-        return array;
-    }
-
-
-
-    public void storeInFolder(String parentName, String childName) {
+    public void storeInFolder(String parentId, String childId) {
         Path foldersDir = baseDir.resolve("folders");
-        Path parentPath = foldersDir.resolve(parentName + ".json");
-        Path childPath = foldersDir.resolve(childName + ".json");
+        Path parentPath = foldersDir.resolve(parentId + ".json");
+        Path childPath = foldersDir.resolve(childId + ".json");
         if (!Files.exists(parentPath) || !Files.exists(childPath)) return;
 
         try {
@@ -131,38 +111,13 @@ public class FolderStorageManager extends DesktopStorageManager {
 
             Files.deleteIfExists(childPath);
 
-            System.out.println("IT HAPPENED");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-
-    private void loadFolderRecursive(Folder folder, JsonObject subFolderObj) {
-        JsonArray filesArray = subFolderObj.getAsJsonArray("files");
-        JsonArray subFoldersArray = subFolderObj.getAsJsonArray("subfolders");
-
-        
-        for (JsonElement e : filesArray) {
-            JsonObject fileObj = e.getAsJsonObject();
-            File fileData = new File(fileObj.get("name").getAsString());
-            fileData.setContent(fileObj.get("content").getAsString());
-            fileData.setLayoutX(fileObj.get("x").getAsDouble());
-            fileData.setLayoutY(fileObj.get("y").getAsDouble());
-            folder.addFile(fileData);
-        }
-
-        
-        for (JsonElement e : subFoldersArray) {
-            JsonObject nestedSubFolderObj = e.getAsJsonObject();
-            Folder nestedSubFolder = new Folder(nestedSubFolderObj.get("name").getAsString());
-            nestedSubFolder.setParentFolder(folder);
-            loadFolderRecursive(nestedSubFolder, nestedSubFolderObj);
-            folder.addFolder(nestedSubFolder);
-        }
-    }
-
-    public void loadAll(Pane desktopPane, FolderManager folderManager) {
+    public void loadAll(FolderManager folderManager) {
+        isLoading = true;
         try (Stream<Path> paths = Files.list(baseDir)) {
             paths.filter(p -> p.toString().endsWith(".json")).forEach(path -> {
                 try {
@@ -171,27 +126,32 @@ public class FolderStorageManager extends DesktopStorageManager {
                     if (!root.isJsonObject()) return;
 
                     JsonObject folderObj = root.getAsJsonObject();
-                    if (!folderObj.has("name") || !folderObj.has("files")) return;
+                    if (!folderObj.has("folderId")) return;
+
+                    if (folderObj.has("parentId") && !folderObj.get("parentId").isJsonNull()) return;
 
                     String folderName = folderObj.get("name").getAsString();
                     double x = folderObj.get("x").getAsDouble();
                     double y = folderObj.get("y").getAsDouble();
 
                     Folder folder = folderManager.createFolderAt(folderName, x, y);
+                    if (folderObj.has("folderId")) folder.setFolderId(folderObj.get("folderId").getAsString());
                     loadFolder(folder);
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             });
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            isLoading = false;
         }
     }
-    public void renameFolder(String oldName, String newName) {
-        Path oldPath = baseDir.resolve(oldName + ".json");
-        Path newPath = baseDir.resolve(newName + ".json");
 
+
+    public void renameFolder(String oldId, String newId) {
+        Path oldPath = baseDir.resolve(oldId + ".json");
+        Path newPath = baseDir.resolve(newId + ".json");
         try {
             if (Files.exists(oldPath)) {
                 Files.move(oldPath, newPath, StandardCopyOption.REPLACE_EXISTING);
@@ -203,4 +163,9 @@ public class FolderStorageManager extends DesktopStorageManager {
         }
     }
 
+    public boolean isLoading() {
+        return isLoading;
+    }
+
+    
 }

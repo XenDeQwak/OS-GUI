@@ -47,11 +47,12 @@ public class FolderManager {
         folder.setLayoutY(y);
         attachEvents(folder);
         desktopPane.getChildren().add(folder);
+        if (!fsm.isLoading()) fsm.saveFolder(folder, true);
         return folder;
     }
 
+
     private void attachEvents(Folder folder) {
-        // Simple context menu for folder icons - just rename for now
         ContextMenu folderMenu = new ContextMenu();
         MenuItem renameItem = new MenuItem("Rename");
         folderMenu.getItems().add(renameItem);
@@ -86,8 +87,10 @@ public class FolderManager {
 
                 if (target != null) {
                     target.addFolder(folder);
-                    fsm.storeInFolder(target.getFolderName(), folder.getFolderName());
-                    fsm.saveFolder(target, true);
+                    if (!fsm.isLoading()) {
+                        fsm.storeInFolder(target.getFolderName(), folder.getFolderName());
+                        fsm.saveFolder(target, true);
+                    }
                     desktopPane.getChildren().remove(folder);
                 } else {
                     snapper.snap(folder);

@@ -43,7 +43,7 @@ public class OSController {
             "New Folder", this::addNewFolder
         ));
         fileStorage.loadAll(desktopPane, fileManager);
-        folderStorage.loadAll(desktopPane, folderManager);
+        folderStorage.loadAll(folderManager);
     }
 
     private int getNextFileNumber() {
