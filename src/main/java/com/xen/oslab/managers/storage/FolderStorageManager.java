@@ -176,4 +176,19 @@ public class FolderStorageManager extends DesktopStorageManager {
             e.printStackTrace();
         }
     }
+    public void renameFolder(String oldName, String newName) {
+        Path oldPath = baseDir.resolve(oldName + ".json");
+        Path newPath = baseDir.resolve(newName + ".json");
+
+        try {
+            if (Files.exists(oldPath)) {
+                Files.move(oldPath, newPath, StandardCopyOption.REPLACE_EXISTING);
+            } else {
+                System.err.println("Old folder file not found: " + oldPath);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.xen.oslab.objects;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,7 +66,8 @@ public class Folder extends VBox {
         setAlignment(Pos.CENTER);
         setSpacing(5);
     }
-    private void startRename(){
+
+    private void startRename() {
         renameFolder.setText(folderName);
         label.setVisible(false);
         renameFolder.setVisible(true);
@@ -75,10 +77,14 @@ public class Folder extends VBox {
 
     private void finishRename() {
         String newName = renameFolder.getText().trim();
-        if (!newName.isEmpty()) {
+        String oldName = folderName;
+
+        if (!newName.isEmpty() && !newName.equals(oldName)) {
             folderName = newName;
             label.setText(newName);
 
+            storage.renameFolder(oldName, newName);
+            storage.saveFolder(this);
         }
         renameFolder.setVisible(false);
         label.setVisible(true);
