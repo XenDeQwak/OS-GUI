@@ -1,4 +1,4 @@
-package com.xen.oslab;
+package com.xen.oslab.utils;
 
 import com.xen.oslab.managers.GridManager;
 import javafx.scene.Node;

@@ -7,6 +7,7 @@ import com.xen.oslab.managers.storage.FileStorageManager;
 import com.xen.oslab.managers.storage.FolderStorageManager;
 import com.xen.oslab.objects.File;
 import com.xen.oslab.objects.Folder;
+import com.xen.oslab.utils.SnapOnGrid;
 
 import javafx.fxml.FXML;
 import javafx.scene.layout.*;

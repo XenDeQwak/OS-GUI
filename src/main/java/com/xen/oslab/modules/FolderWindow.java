@@ -64,7 +64,7 @@ public class FolderWindow {
 
         for (Folder sub : folder.getSubFolders()) {
             attachSubfolderEvents(sub, fileManager, fsm);
-            contentPane.getChildren().add(sub);
+            if (!contentPane.getChildren().contains(sub)) contentPane.getChildren().add(sub);
         }
 
         Stage stage = new Stage();

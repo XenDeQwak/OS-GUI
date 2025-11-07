@@ -1,11 +1,11 @@
 package com.xen.oslab.managers;
 
-import com.xen.oslab.SnapOnGrid;
 import com.xen.oslab.managers.storage.FileStorageManager;
 import com.xen.oslab.modules.FileEditor;
 import com.xen.oslab.objects.File;
 import com.xen.oslab.objects.Folder;
 import com.xen.oslab.utils.FileEventUtils;
+import com.xen.oslab.utils.SnapOnGrid;
 
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;

@@ -1,10 +1,11 @@
 package com.xen.oslab.managers;
 
-import com.xen.oslab.SnapOnGrid;
 import com.xen.oslab.managers.storage.FolderStorageManager;
 import com.xen.oslab.modules.FolderWindow;
 import com.xen.oslab.objects.Folder;
 import com.xen.oslab.utils.FolderEventUtils;
+import com.xen.oslab.utils.SnapOnGrid;
+
 import javafx.scene.control.ContextMenu;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -30,15 +31,13 @@ public class FolderManager {
 
     public void createFolder(String name, int row, int col) {
         Folder folder = new Folder(name);
-        double x = col * cellW;
-        double y = row * cellH;
-        folder.setLayoutX(x);
-        folder.setLayoutY(y);
+        folder.setLayoutX(col * cellW);
+        folder.setLayoutY(row * cellH);
         folder.setUserData(new int[]{row, col});
         occupied[row][col] = true;
 
         attachEvents(folder, false);
-        desktopPane.getChildren().add(folder);
+        addToDesktop(folder);
     }
 
     public Folder createFolderAt(String name, double x, double y) {
@@ -46,12 +45,16 @@ public class FolderManager {
         folder.setLayoutX(x);
         folder.setLayoutY(y);
         attachEvents(folder, true);
-        desktopPane.getChildren().add(folder);
+        addToDesktop(folder);
         return folder;
     }
 
+    private void addToDesktop(Folder folder) {
+        markOccupied(folder);
+        if (!desktopPane.getChildren().contains(folder)) desktopPane.getChildren().add(folder);
+    }
 
-   private void attachEvents(Folder folder, boolean isLoaded) {
+    private void attachEvents(Folder folder, boolean isLoaded) {
         if (!isLoaded) markOccupied(folder);
 
         folder.setOnMousePressed(e -> handleFolderPress(folder, e));
@@ -60,12 +63,17 @@ public class FolderManager {
 
         ContextMenu menu = FolderEventUtils.createRenameContextMenu(folder, () -> fsm.saveFolder(folder));
 
-        folder.setOnMouseClicked(e -> {
+        folder.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
             if (e.getButton() == MouseButton.SECONDARY) {
                 FolderEventUtils.showMenu(menu, e.getScreenX(), e.getScreenY(), folder);
                 e.consume();
-            } else if (e.getClickCount() == 2 && e.getButton() == MouseButton.PRIMARY) {
+            }
+        });
+
+        folder.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+            if (e.getButton() == MouseButton.PRIMARY && e.getClickCount() == 2) {
                 new FolderWindow(folder, fileManager, fsm);
+                e.consume();
             }
         });
     }
@@ -112,6 +120,7 @@ public class FolderManager {
             desktopPane.getChildren().remove(folder);
         } else {
             snapper.snap(folder);
+            if (!fsm.isLoading()) fsm.saveFolder(folder);
         }
     }
 }
