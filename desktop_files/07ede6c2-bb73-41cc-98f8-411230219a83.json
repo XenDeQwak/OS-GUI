@@ -1,14 +1,22 @@
 {
   "name": "New Folder 1",
   "folderId": "07ede6c2-bb73-41cc-98f8-411230219a83",
-  "x": 0.0,
+  "x": 720.0,
   "y": 0.0,
-  "files": [],
+  "files": [
+    {
+      "name": "New File 1",
+      "x": 0.0,
+      "y": 0.0,
+      "content": ""
+    }
+  ],
   "subfolders": [
     {
       "name": "New Folder 2",
       "folderId": "5dac170c-6fb7-483b-ac85-609b651bfe3c",
-      "x": 0.0,
+      "parentId": "07ede6c2-bb73-41cc-98f8-411230219a83",
+      "x": 100.0,
       "y": 0.0,
       "files": [],
       "subfolders": []
@@ -17,7 +25,7 @@
       "name": "New Folder",
       "folderId": "744db7b7-f879-40ca-b63c-b726f0e4341c",
       "parentId": "07ede6c2-bb73-41cc-98f8-411230219a83",
-      "x": 100.0,
+      "x": 200.0,
       "y": 0.0,
       "files": [
         {
@@ -27,6 +35,24 @@
           "content": ""
         }
       ],
+      "subfolders": []
+    },
+    {
+      "name": "New Folder 2",
+      "folderId": "92e1c909-04fb-4ac3-91ff-9fcf2d1befe5",
+      "parentId": "07ede6c2-bb73-41cc-98f8-411230219a83",
+      "x": 300.0,
+      "y": 0.0,
+      "files": [],
+      "subfolders": []
+    },
+    {
+      "name": "New Folder 2",
+      "folderId": "f766779b-0226-4aa1-bcd7-84be7c7fab19",
+      "parentId": "07ede6c2-bb73-41cc-98f8-411230219a83",
+      "x": 400.0,
+      "y": 0.0,
+      "files": [],
       "subfolders": []
     }
   ]
