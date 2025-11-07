@@ -5,8 +5,6 @@ import com.xen.oslab.managers.storage.FolderStorageManager;
 import com.xen.oslab.modules.FolderWindow;
 import com.xen.oslab.objects.Folder;
 import com.xen.oslab.utils.FolderEventUtils;
-
-import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -19,7 +17,6 @@ public class FolderManager {
     private final double cellW, cellH;
     private final FileManager fileManager;
     private final FolderStorageManager fsm;
-    private ContextMenu openMenu = null;
 
     public FolderManager(Pane desktopPane, SnapOnGrid snapper, boolean[][] occupied, double cellW, double cellH, FileManager fileManager, FolderStorageManager fsm) {
         this.desktopPane = desktopPane;
@@ -117,14 +114,4 @@ public class FolderManager {
             snapper.snap(folder);
         }
     }
-
-
-    private void finishRename(Folder folder) {
-        folder.finishRename();
-        fsm.saveFolder(folder);
-    }
-
-    
-
-
 }
