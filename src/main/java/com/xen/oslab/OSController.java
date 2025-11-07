@@ -9,7 +9,6 @@ import com.xen.oslab.objects.File;
 import com.xen.oslab.objects.Folder;
 
 import javafx.fxml.FXML;
-import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 
 public class OSController {
