@@ -73,9 +73,4 @@ public class OSController {
         int num = getNextFolderNumber();
         folderManager.createFolder("New Folder " + num, free[0], free[1]);
     }
-
-    //temporary call to autosave on exit. remove in the future
-    public void saveState() {
-        fileStorage.saveAll(desktopPane);
-    }
 }

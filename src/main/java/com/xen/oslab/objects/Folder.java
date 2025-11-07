@@ -69,7 +69,7 @@ public class Folder extends VBox {
             label.setText(newName);
 
             storage.renameFolder(oldName, newName);
-            storage.saveFolder(this, true);
+            storage.saveFolder(this);
         }
         renameField.setVisible(false);
         label.setVisible(true);
@@ -80,8 +80,11 @@ public class Folder extends VBox {
     }
 
     public void addFile(File f) {
-        files.add(f);
+        if (files.stream().noneMatch(existing -> existing.getFileId().equals(f.getFileId()))) {
+            files.add(f);
+        }
     }
+
 
     public void addFolder(Folder folder) {
         subFolders.add(folder);

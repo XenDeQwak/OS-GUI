@@ -14,7 +14,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
 public class File extends VBox {
-    private final String fileId = UUID.randomUUID().toString();
+    private String fileId = UUID.randomUUID().toString();
     private String fileName;
     private String content = "";
     private String filePath;
@@ -22,6 +22,7 @@ public class File extends VBox {
     private int col = -1;
     private Label label;
     private TextField renameFile;
+    private Folder parentFolder;
 
     public File(String name) {
         this.fileName = name;
@@ -43,27 +44,13 @@ public class File extends VBox {
         renameFile.setAlignment(Pos.CENTER);
         renameFile.setMaxWidth(80);
         renameFile.setVisible(false);
+        
         getChildren().addAll(fileImage, label, renameFile);
-
-        ContextMenu contextMenu = new ContextMenu();
-        MenuItem renameItem = new MenuItem("Rename File");
-        renameItem.setOnAction(e -> startRename());
-        contextMenu.getItems().add(renameItem);
-        label.setOnContextMenuRequested(e -> {
-            contextMenu.show(label, e.getScreenX(), e.getScreenY());
-            e.consume();
-        });
-
-        renameFile.setOnAction(e -> finishRename());
-        renameFile.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
-            if (!isNowFocused) finishRename();
-        });
-
         setAlignment(Pos.CENTER);
         setSpacing(5);
     }
 
-        private void startRename(){
+        public void startRename(){
             renameFile.setText(fileName);
             label.setVisible(false);
             renameFile.setVisible(true);
@@ -71,7 +58,7 @@ public class File extends VBox {
             renameFile.selectAll();
         }
 
-    private void finishRename() {
+    public void finishRename() {
         String newName = renameFile.getText().trim();
         if (!newName.isEmpty()) {
             fileName = newName;
@@ -100,6 +87,17 @@ public class File extends VBox {
 
     public String getFileId() {
         return fileId;
+    }
+
+    public void setFileId(String fileId) {
+        this.fileId = fileId;
+    }
+
+    public Folder getParentFolder() { return parentFolder; }
+    public void setParentFolder(Folder folder) { this.parentFolder = folder; }
+
+    public TextField getRenameFile() {
+        return renameFile;
     }
 
     
