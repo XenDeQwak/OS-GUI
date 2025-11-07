@@ -7,6 +7,7 @@ import com.xen.oslab.objects.File;
 import com.xen.oslab.objects.Folder;
 
 import javafx.scene.Node;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 
 public class FileManager {
@@ -64,7 +65,7 @@ public class FileManager {
 
 
         file.setOnMouseClicked(e -> {
-            if (e.getClickCount() == 2) {
+            if (e.getClickCount() == 2 && e.getButton() == MouseButton.PRIMARY) {
                 FileEditor.open(file, () -> storage.saveAll(desktopPane));
             }
         });
@@ -77,7 +78,7 @@ public class FileManager {
                     if (file.getBoundsInParent().intersects(folder.getBoundsInParent())) {
                         folder.addFile(file);
                         desktopPane.getChildren().remove(file);
-                        folder.getStorage().saveFolder(folder);
+                        folder.getStorage().saveFolder(folder, true);
                         insideFolder = true;
                         break;
                     }
@@ -86,14 +87,6 @@ public class FileManager {
 
             if (!insideFolder) snapper.snap(file);
         });
-
-
-        // file.setOnMouseClicked(e-> {
-        //     if (e.getButton() == MouseButton.SECONDARY) {
-        //         //function for name change
-        //         //DesktopMenuManager.fileMenu(file)
-        //     }
-        // });
 
     }
 }

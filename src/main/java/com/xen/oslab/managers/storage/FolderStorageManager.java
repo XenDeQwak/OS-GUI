@@ -11,11 +11,18 @@ import java.util.stream.Stream;
 
 public class FolderStorageManager extends DesktopStorageManager {
 
-    public void saveFolder(Folder folder) {
+    public void saveFolder(Folder folder, boolean isTopLevel) {
+        if (!isTopLevel) return;
+
         Path path = baseDir.resolve(folder.getFolderName() + ".json");
+        JsonObject folderObj = buildFolderJson(folder);
+        write(path, gson.toJson(folderObj));
+    }
+
+    private JsonObject buildFolderJson(Folder folder) {
         JsonArray filesArray = new JsonArray();
         JsonArray subFoldersArray = new JsonArray();
-        
+
         for (File f : folder.getFiles()) {
             JsonObject fileObj = new JsonObject();
             fileObj.addProperty("name", f.getFileName());
@@ -25,11 +32,11 @@ public class FolderStorageManager extends DesktopStorageManager {
             filesArray.add(fileObj);
         }
 
-        
         for (Folder subFolder : folder.getSubFolders()) {
             JsonObject subFolderObj = new JsonObject();
             subFolderObj.addProperty("name", subFolder.getFolderName());
-            saveFolderRecursive(subFolder, subFolderObj);
+            subFolderObj.add("files", buildFilesArray(subFolder));
+            subFolderObj.add("subfolders", buildSubfoldersArray(subFolder));
             subFoldersArray.add(subFolderObj);
         }
 
@@ -39,30 +46,7 @@ public class FolderStorageManager extends DesktopStorageManager {
         folderObj.add("subfolders", subFoldersArray);
         folderObj.addProperty("x", folder.getLayoutX());
         folderObj.addProperty("y", folder.getLayoutY());
-        write(path, gson.toJson(folderObj));
-    }
-
-    private void saveFolderRecursive(Folder folder, JsonObject subFolderObj) {
-        JsonArray filesArray = new JsonArray();
-        for (File f : folder.getFiles()) {
-            JsonObject fileObj = new JsonObject();
-            fileObj.addProperty("name", f.getFileName());
-            fileObj.addProperty("x", f.getLayoutX());
-            fileObj.addProperty("y", f.getLayoutY());
-            fileObj.addProperty("content", f.getContent());
-            filesArray.add(fileObj);
-        }
-
-        JsonArray subFoldersArray = new JsonArray();
-        for (Folder subFolder : folder.getSubFolders()) {
-            JsonObject nestedSubFolderObj = new JsonObject();
-            nestedSubFolderObj.addProperty("name", subFolder.getFolderName());
-            saveFolderRecursive(subFolder, nestedSubFolderObj);
-            subFoldersArray.add(nestedSubFolderObj);
-        }
-
-        subFolderObj.add("files", filesArray);
-        subFolderObj.add("subfolders", subFoldersArray);
+        return folderObj;
     }
 
     public void loadFolder(Folder folder) {
@@ -89,10 +73,37 @@ public class FolderStorageManager extends DesktopStorageManager {
         for (JsonElement e : subFoldersArray) {
             JsonObject subFolderObj = e.getAsJsonObject();
             Folder subFolder = new Folder(subFolderObj.get("name").getAsString());
+            subFolder.setParentFolder(folder);
             loadFolderRecursive(subFolder, subFolderObj);
             folder.addFolder(subFolder);
         }
     }
+
+    private JsonArray buildFilesArray(Folder folder) {
+        JsonArray filesArray = new JsonArray();
+        for (File f : folder.getFiles()) {
+            JsonObject fileObj = new JsonObject();
+            fileObj.addProperty("name", f.getFileName());
+            fileObj.addProperty("x", f.getLayoutX());
+            fileObj.addProperty("y", f.getLayoutY());
+            fileObj.addProperty("content", f.getContent());
+            filesArray.add(fileObj);
+        }
+        return filesArray;
+    }
+
+    private JsonArray buildSubfoldersArray(Folder folder) {
+        JsonArray array = new JsonArray();
+        for (Folder subFolder : folder.getSubFolders()) {
+            JsonObject obj = new JsonObject();
+            obj.addProperty("name", subFolder.getFolderName());
+            obj.add("files", buildFilesArray(subFolder));
+            obj.add("subfolders", buildSubfoldersArray(subFolder));
+            array.add(obj);
+        }
+        return array;
+    }
+
 
 
     public void storeInFolder(String parentName, String childName) {
@@ -145,6 +156,7 @@ public class FolderStorageManager extends DesktopStorageManager {
         for (JsonElement e : subFoldersArray) {
             JsonObject nestedSubFolderObj = e.getAsJsonObject();
             Folder nestedSubFolder = new Folder(nestedSubFolderObj.get("name").getAsString());
+            nestedSubFolder.setParentFolder(folder);
             loadFolderRecursive(nestedSubFolder, nestedSubFolderObj);
             folder.addFolder(nestedSubFolder);
         }

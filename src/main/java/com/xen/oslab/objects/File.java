@@ -1,5 +1,7 @@
 package com.xen.oslab.objects;
 
+import java.util.UUID;
+
 import com.xen.oslab.managers.LoadManager;
 import javafx.geometry.Pos;
 import javafx.scene.control.ContextMenu;
@@ -12,6 +14,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
 public class File extends VBox {
+    private final String id = UUID.randomUUID().toString();
     private String fileName;
     private String content = "";
     private String filePath;

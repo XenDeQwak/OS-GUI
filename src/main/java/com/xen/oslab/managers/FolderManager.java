@@ -4,6 +4,10 @@ import com.xen.oslab.SnapOnGrid;
 import com.xen.oslab.managers.storage.FolderStorageManager;
 import com.xen.oslab.modules.FolderWindow;
 import com.xen.oslab.objects.Folder;
+
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 
 public class FolderManager {
@@ -12,14 +16,16 @@ public class FolderManager {
     private final boolean[][] occupied;
     private final double cellW, cellH;
     private final FileManager fileManager;
+    private final FolderStorageManager fsm;
 
-    public FolderManager(Pane desktopPane, SnapOnGrid snapper, boolean[][] occupied, double cellW, double cellH, FileManager fileManager) {
+    public FolderManager(Pane desktopPane, SnapOnGrid snapper, boolean[][] occupied, double cellW, double cellH, FileManager fileManager, FolderStorageManager fsm) {
         this.desktopPane = desktopPane;
         this.snapper = snapper;
         this.occupied = occupied;
         this.cellW = cellW;
         this.cellH = cellH;
         this.fileManager = fileManager;
+        this.fsm = fsm;
     }
 
     public void createFolder(String name, int row, int col) {
@@ -45,45 +51,68 @@ public class FolderManager {
     }
 
     private void attachEvents(Folder folder) {
+        // Simple context menu for folder icons - just rename for now
+        ContextMenu folderMenu = new ContextMenu();
+        MenuItem renameItem = new MenuItem("Rename");
+        folderMenu.getItems().add(renameItem);
+
         folder.setOnMousePressed(e -> {
-            int[] pos = (int[]) folder.getUserData();
-            if (pos != null) occupied[pos[0]][pos[1]] = false;
-            folder.setUserData(null);
-            folder.toFront();
+            if (e.getButton() == MouseButton.PRIMARY) {
+                int[] pos = (int[]) folder.getUserData();
+                if (pos != null) occupied[pos[0]][pos[1]] = false;
+                folder.setUserData(null);
+                folder.toFront();
+            }
         });
 
         folder.setOnMouseDragged(e -> {
-            folder.setLayoutX(e.getSceneX() - folder.getWidth() / 2);
-            folder.setLayoutY(e.getSceneY() - folder.getHeight() / 2);
+            if (e.getButton() == MouseButton.PRIMARY) {
+                folder.setLayoutX(e.getSceneX() - folder.getWidth() / 2);
+                folder.setLayoutY(e.getSceneY() - folder.getHeight() / 2);
+            }
         });
 
         folder.setOnMouseReleased(e -> {
-            Folder target = null;
-            for (var node : desktopPane.getChildren()) {
-                if (node instanceof Folder f && f != folder) {
-                    if (f.getBoundsInParent().intersects(folder.getBoundsInParent())) {
-                        target = f;
-                        break;
+            if (e.getButton() == MouseButton.PRIMARY) {
+                Folder target = null;
+                for (var node : desktopPane.getChildren()) {
+                    if (node instanceof Folder f && f != folder) {
+                        if (f.getBoundsInParent().intersects(folder.getBoundsInParent())) {
+                            target = f;
+                            break;
+                        }
                     }
                 }
-            }
 
-            if (target != null) {
-                target.addFolder(folder);
-                FolderStorageManager fsm = new FolderStorageManager();
-                fsm.storeInFolder(target.getFolderName(), folder.getFolderName());
-                fsm.saveFolder(target);
-                desktopPane.getChildren().remove(folder);
-            } else {
-                snapper.snap(folder);
+                if (target != null) {
+                    target.addFolder(folder);
+                    fsm.storeInFolder(target.getFolderName(), folder.getFolderName());
+                    fsm.saveFolder(target, true);
+                    desktopPane.getChildren().remove(folder);
+                } else {
+                    snapper.snap(folder);
+                }
             }
         });
 
-
         folder.setOnMouseClicked(e -> {
-            if (e.getClickCount() == 2) {
-                new FolderWindow(folder, fileManager);
+            if (e.getButton() == MouseButton.SECONDARY) {
+                folderMenu.show(folder, e.getScreenX(), e.getScreenY());
+                e.consume();
+            } else if (e.getClickCount() == 2 && e.getButton() == MouseButton.PRIMARY) {
+                new FolderWindow(folder, fileManager, fsm);
+            } else {
+                folderMenu.hide();
             }
+        });
+
+        folder.getRenameField().setOnAction(e -> folder.finishRename());
+        folder.getRenameField().focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+            if (!isNowFocused) folder.finishRename();
+        });
+
+        renameItem.setOnAction(e-> {
+            folder.startRename();
         });
     }
 
