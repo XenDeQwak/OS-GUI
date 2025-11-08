@@ -186,5 +186,30 @@ public class FolderStorageManager extends DesktopStorageManager {
         return isLoading;
     }
 
+    public void deleteFolder(Folder folder) {
+        if (folder == null) return;
+
+        if (!folder.getSubFolders().isEmpty()) {
+            for (Folder sub : folder.getSubFolders()) {
+                deleteFolder(sub);
+            }
+        }
+
+        Folder parent = folder.getParentFolder();
+        if (parent != null) {
+            parent.getSubFolders().remove(folder);
+        }
+
+        Path path = baseDir.resolve(folder.getFolderId() + JSON);
+        try {
+            Files.deleteIfExists(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (parent != null) {
+            saveFolder(parent);
+        }
+    }
     
 }

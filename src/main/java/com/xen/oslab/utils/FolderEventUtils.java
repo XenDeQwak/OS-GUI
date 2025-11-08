@@ -8,11 +8,14 @@ import javafx.scene.Node;
 public class FolderEventUtils {
 
     private static ContextMenu openMenu = null;
-    public static ContextMenu createRenameContextMenu(Folder folder, Runnable saveAction) {
+    public static ContextMenu createRenameContextMenu(Folder folder, Runnable saveAction, Runnable deleteAction) {
         MenuItem renameItem = new MenuItem("Rename");
+        MenuItem deleteItem = new MenuItem("Delete");
         renameItem.setOnAction(e -> folder.startRename());
+        deleteItem.setOnAction(e -> deleteAction.run());
 
-        ContextMenu menu = new ContextMenu(renameItem);
+
+        ContextMenu menu = new ContextMenu(renameItem, deleteItem);
 
         folder.getRenameField().setOnAction(e -> {
             folder.finishRename();

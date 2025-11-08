@@ -18,9 +18,9 @@ import javafx.stage.Stage;
 
 public class FolderWindow {
     private ContextMenu openMenu = null;
+    FlowPane contentPane = new FlowPane(20, 20);
 
     public FolderWindow(Folder folder, FileManager fileManager, FolderStorageManager fsm) {
-        FlowPane contentPane = new FlowPane(20, 20);
         contentPane.setStyle("-fx-background-color: #2b2b2b;");
         contentPane.setPickOnBounds(true);
 
@@ -79,8 +79,12 @@ public class FolderWindow {
     }
 
     private void attachSubfolderEvents(Folder sub, FileManager fm, FolderStorageManager fsm) {
-        ContextMenu menu = FolderEventUtils.createRenameContextMenu(sub, () -> fsm.saveFolder(getRootFolder(sub)));
-
+        Folder parent = sub.getParentFolder();
+        ContextMenu menu = FolderEventUtils.createRenameContextMenu(
+            sub, 
+            () -> fsm.saveFolder(getRootFolder(sub)),
+            () -> deleteFolderInDir(parent, sub, fsm)
+        ); 
         sub.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
             if (e.getButton() == MouseButton.SECONDARY) {
                 FolderEventUtils.showMenu(menu, e.getScreenX(), e.getScreenY(), sub);
@@ -105,6 +109,17 @@ public class FolderWindow {
         openMenu = menu;
         menu.show(node, x, y);
         menu.setOnHidden(e -> openMenu = null);
+    }
+
+    private void deleteFolderInDir(Folder parent, Folder sub, FolderStorageManager fsm) {
+        if (parent != null) {
+            parent.getSubFolders().remove(sub);
+            contentPane.getChildren().remove(sub);
+            fsm.saveFolder(getRootFolder(sub));
+        } else {
+            contentPane.getChildren().remove(sub);
+            fsm.deleteFolder(sub);
+        }
     }
 }
 
