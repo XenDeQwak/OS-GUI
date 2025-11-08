@@ -5,9 +5,7 @@ import com.xen.oslab.managers.storage.BackgroundStorageManager;
 import com.google.gson.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
@@ -27,6 +25,7 @@ public class LoginManager {
     @FXML private Label userLabel;
     @FXML private StackPane desktopPane;
     @FXML private ImageView bgImageView;
+    @FXML private ListView<String> userListView;
 
     private Stage stage;
     private String currentUser;
@@ -45,6 +44,7 @@ public class LoginManager {
 
     @FXML
     public void initialize() {
+        // Load background
         String bgFile = bgStorage.loadBackground();
         if (bgFile != null && !bgFile.isEmpty()) {
             String path = "/com/xen/oslab/backgrounds/" + bgFile;
@@ -59,23 +59,24 @@ public class LoginManager {
         }
 
         try {
-            String content = Files.readString(USERS_FILE);
-            JsonObject obj = JsonParser.parseString(content).getAsJsonObject();
-            if (!obj.keySet().isEmpty()) {
-                currentUser = obj.keySet().iterator().next(); 
-                userLabel.setText("Welcome, " + currentUser);
+            if (Files.exists(USERS_FILE)) {
+                String content = Files.readString(USERS_FILE);
+                JsonObject obj = JsonParser.parseString(content).getAsJsonObject();
+                userListView.getItems().clear();
+                obj.keySet().forEach(userListView.getItems()::add);
+
+                if (!obj.keySet().isEmpty()) {
+                    currentUser = obj.keySet().iterator().next();
+                    userLabel.setText("Welcome, " + currentUser);
+                    userListView.getSelectionModel().select(0);
+                } else {
+                    userLabel.setText("No users yet");
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-       
-
-        if (passwordField != null) {
-            passwordField.setStyle("-fx-font-size: 18;");
-            passwordField.setPrefHeight(40);
-        }
-    }
+    }   
 
     @FXML
     private void handleLogin() {
@@ -96,16 +97,33 @@ public class LoginManager {
         });
     }
 
+   @FXML
+    private void handleSignUp() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/xen/oslab/sign-up.fxml"));
+            Parent root = loader.load();
+
+            SignupManager controller = loader.getController();
+            controller.setStage(stage);
+
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle("Sign Up");
+            stage.centerOnScreen();
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError("Failed to open sign-up.");
+        }
+    }
+
     private void launchOS() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/xen/oslab/os-view.fxml"));
             Parent root = loader.load();
-            Scene scene = new Scene(root);
-
-            stage.setScene(scene);
-            stage.sizeToScene();
+            stage.setScene(new Scene(root));
             stage.setMaximized(true);
-            stage.centerOnScreen(); 
+            stage.centerOnScreen();
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();
@@ -120,11 +138,6 @@ public class LoginManager {
         } else {
             showError("Incorrect password. Attempt " + failedAttempts + " of " + MAX_ATTEMPTS + ".");
         }
-    }
-
-    @FXML
-    private void handlePower() {
-        Platform.exit();
     }
 
     private void showError(String msg) {

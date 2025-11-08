@@ -3,6 +3,7 @@ package com.xen.oslab.managers.storage;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -31,9 +32,40 @@ public class UserStorageManager {
             e.printStackTrace();
         }
     }
+
     public static boolean validateUser(String username, String password) {
         if (!users.containsKey(username)) return false;
         return users.get(username).equals(hashPassword(password));
+    }
+
+    public static void addUser(String username, String password) {
+        users.put(username, hashPassword(password));
+        saveUsers();
+    }
+
+    private static void saveUsers() {
+        try {
+            File file = new File(FILE_PATH);
+            file.getParentFile().mkdirs();
+            try (Writer writer = new FileWriter(file)) {
+                JsonObject obj = new JsonObject();
+                for (Map.Entry<String, String> entry : users.entrySet()) {
+                    obj.addProperty(entry.getKey(), entry.getValue());
+                }
+                writer.write(obj.toString());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static Set<String> getAllUsers() {
+        return users.keySet();
+    }
+
+    public static void reloadUsers() {
+        users.clear();
+        loadUsers();
     }
 
     private static String hashPassword(String password) {

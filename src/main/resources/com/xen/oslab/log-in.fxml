@@ -27,6 +27,19 @@
                                style="-fx-font-size: 18;"/>
                 <Button text="Sign In" onAction="#handleLogin" maxWidth="350" prefHeight="40"
                         style="-fx-font-size: 18;"/>
+                <Button text="Sign Up" onAction="#handleSignUp" maxWidth="350" prefHeight="40"
+                        style="-fx-font-size: 18; -fx-background-color: #3b82f6; -fx-text-fill: white;"/>
+            </VBox>
+
+
+            <VBox alignment="TOP_CENTER" spacing="10.0" 
+                  style="-fx-background-color: rgba(0,0,0,0.5); -fx-background-radius: 15; -fx-padding: 20;"
+                  StackPane.alignment="CENTER_RIGHT" maxWidth="250" minWidth="200">
+                <Label text="Select User" style="-fx-text-fill: white; -fx-font-size: 18; -fx-font-weight: bold;"/>
+                <ListView fx:id="userListView" 
+                          maxWidth="230" minWidth="200" maxHeight="400"
+                          style="-fx-background-color: rgba(255,255,255,0.05); -fx-control-inner-background: rgba(0,0,0,0.2); -fx-text-fill: white; -fx-font-size: 16;">
+                </ListView>
             </VBox>
 
         </StackPane>

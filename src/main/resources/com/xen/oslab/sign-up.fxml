@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx/17.0.12"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.xen.oslab.managers.SignupManager"
+           fx:id="desktopPane"
+           prefWidth="800" prefHeight="600">
+
+    <ImageView fx:id="bgImageView" preserveRatio="false">
+        <effect>
+            <GaussianBlur radius="8"/>
+        </effect>
+    </ImageView>
+
+   <VBox alignment="CENTER" spacing="20.0"
+      style="-fx-background-color: rgba(0,0,0,0.6); -fx-background-radius: 15; -fx-padding: 50;"
+      maxWidth="500" maxHeight="550">
+
+    <Label text="Create New Account"
+           style="-fx-text-fill: white; -fx-font-size: 26; -fx-font-weight: bold;"/>
+
+    <TextField fx:id="usernameField" promptText="Username" maxWidth="400" prefHeight="40"
+               style="-fx-font-size: 18;"/>
+    <PasswordField fx:id="passwordField" promptText="Password" maxWidth="400" prefHeight="40"
+                   style="-fx-font-size: 18;"/>
+    <PasswordField fx:id="confirmPasswordField" promptText="Confirm Password" maxWidth="400" prefHeight="40"
+                   style="-fx-font-size: 18;"/>
+
+    <ProgressBar fx:id="pwdStrengthBar" maxWidth="400" prefHeight="10"/>
+    <Label fx:id="pwdStrengthLabel" text="" style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16;"/>
+
+    <Button text="Sign Up" onAction="#handleSignUp" maxWidth="400" prefHeight="40"
+            style="-fx-font-size: 18; -fx-background-color: #3b82f6; -fx-text-fill: white;"/>
+            
+</VBox>
+
+
+</StackPane>
