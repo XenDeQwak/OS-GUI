@@ -9,7 +9,6 @@ import com.xen.oslab.objects.File;
 import com.xen.oslab.objects.Folder;
 import com.xen.oslab.utils.SnapOnGrid;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -64,7 +63,6 @@ public class OSController {
             });
             bgMenu.getItems().add(item);
         }
-
         new DesktopMenuManager(desktopPane, Map.of(
             "New File", this::addNewFile,
             "New Folder", this::addNewFolder

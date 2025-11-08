@@ -61,7 +61,10 @@ public class FolderManager {
         folder.setOnMouseDragged(e -> handleFolderDrag(folder, e));
         folder.setOnMouseReleased(e -> handleFolderRelease(folder));
 
-        ContextMenu menu = FolderEventUtils.createRenameContextMenu(folder, () -> fsm.saveFolder(folder));
+        ContextMenu menu = FolderEventUtils.createRenameContextMenu(
+            folder, 
+            () -> fsm.saveFolder(folder),
+            () -> deleteFolder(folder));
 
         folder.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
             if (e.getButton() == MouseButton.SECONDARY) {
@@ -122,5 +125,18 @@ public class FolderManager {
             snapper.snap(folder);
             if (!fsm.isLoading()) fsm.saveFolder(folder);
         }
+    }
+
+    private void deleteFolder(Folder folder) {
+        desktopPane.getChildren().remove(folder);
+
+        int[] pos = (int[]) folder.getUserData();
+        if (pos != null && pos[0] < occupied.length && pos[1] < occupied[0].length) occupied[pos[0]][pos[1]] = false;
+        if (folder.getParentFolder() != null) {
+            folder.getParentFolder().getSubFolders().remove(folder);
+            fsm.saveFolder(folder.getParentFolder());
+        }
+
+        fsm.deleteFolder(folder);
     }
 }
