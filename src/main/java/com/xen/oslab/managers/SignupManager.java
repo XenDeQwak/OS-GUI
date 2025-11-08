@@ -179,7 +179,7 @@ public class SignupManager {
                 LoginManager controller = loader.getController();
                 controller.setStage(stage);
 
-                stage.setScene(new Scene(root, 400, 350));
+                stage.setScene(new Scene(root));
                 stage.setTitle("Login");
                 stage.show();
             } catch (IOException e) {
