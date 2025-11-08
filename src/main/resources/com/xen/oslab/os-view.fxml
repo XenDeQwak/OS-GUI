@@ -8,6 +8,6 @@
 
    </center>
    <bottom>
-      <HBox alignment="BOTTOM_LEFT" style="-fx-background-color: #222222;" prefHeight="50.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <HBox fx:id="taskbar" alignment="BOTTOM_RIGHT" style="-fx-background-color: #222222;" prefHeight="50.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
    </bottom>
 </BorderPane>

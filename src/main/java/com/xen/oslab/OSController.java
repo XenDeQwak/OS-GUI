@@ -1,19 +1,32 @@
 package com.xen.oslab;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
-import com.xen.oslab.managers.*;
+import com.xen.oslab.managers.DesktopMenuManager;
+import com.xen.oslab.managers.FileManager;
+import com.xen.oslab.managers.FolderManager;
+import com.xen.oslab.managers.GridManager;
 import com.xen.oslab.managers.storage.FileStorageManager;
 import com.xen.oslab.managers.storage.FolderStorageManager;
 import com.xen.oslab.objects.File;
 import com.xen.oslab.objects.Folder;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.fxml.FXML;
-import javafx.scene.layout.*;
+import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.util.Duration;
+
 
 public class OSController {
     @FXML
     private Pane desktopPane;
+    @FXML
+    private HBox taskbar;
 
     private GridManager grid;
     private FileManager fileManager;
@@ -37,6 +50,23 @@ public class OSController {
         folderStorage = new FolderStorageManager();
         fileManager = new FileManager(desktopPane, snapper, occupied, cellW, cellH);
         folderManager = new FolderManager(desktopPane, snapper, occupied, cellW, cellH, fileManager, folderStorage);
+
+        Label clockLabel = new Label();
+        clockLabel.setStyle("-fx-text-fill: white; -fx-font-size: 11px; -fx-padding: 4 10 4 10;");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE, MMM d yyyy - hh:mm a");
+
+        Timeline clock = new Timeline(
+            new KeyFrame(Duration.ZERO, e -> {
+                LocalDateTime now = LocalDateTime.now();
+                clockLabel.setText(now.format(formatter));
+            }),
+            new KeyFrame(Duration.seconds(1))
+        );
+        clock.setCycleCount(Timeline.INDEFINITE);
+        clock.play();
+
+        taskbar.getChildren().add(0, clockLabel);
+
 
         new DesktopMenuManager(desktopPane, Map.of(
             "New File", this::addNewFile,
