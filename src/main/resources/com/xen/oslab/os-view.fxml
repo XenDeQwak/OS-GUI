@@ -7,6 +7,6 @@
        <Pane fx:id="desktopPane" style="-fx-background-color: #222831;" BorderPane.alignment="CENTER"/>
    </center>
    <bottom>
-      <HBox fx:id="taskbar" style="-fx-background-color: #222222;" prefHeight="50.0" BorderPane.alignment="CENTER"/>
+      <HBox fx:id="taskbar" style="-fx-background-color: #222222;" prefHeight="40.0" BorderPane.alignment="CENTER"/>
    </bottom>
 </BorderPane>
