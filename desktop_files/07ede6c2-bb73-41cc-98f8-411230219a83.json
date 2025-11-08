@@ -1,7 +1,7 @@
 {
-  "name": "New Folder 1",
+  "name": "Hi",
   "folderId": "07ede6c2-bb73-41cc-98f8-411230219a83",
-  "x": 80.0,
+  "x": 480.0,
   "y": 100.0,
   "files": [
     {
@@ -52,6 +52,15 @@
       "parentId": "07ede6c2-bb73-41cc-98f8-411230219a83",
       "x": 400.0,
       "y": 0.0,
+      "files": [],
+      "subfolders": []
+    },
+    {
+      "name": "New Folder 2",
+      "folderId": "6792837c-c42a-44f3-8a4a-954a6084cfda",
+      "parentId": "07ede6c2-bb73-41cc-98f8-411230219a83",
+      "x": 0.0,
+      "y": 122.0,
       "files": [],
       "subfolders": []
     }

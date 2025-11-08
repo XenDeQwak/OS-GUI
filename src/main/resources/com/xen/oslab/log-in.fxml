@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.xen.oslab.managers.LoginManager">
+
+    <center>
+        <StackPane fx:id="desktopPane">
+
+            <ImageView fx:id="bgImageView" preserveRatio="false">
+                <effect>
+                    <GaussianBlur radius="8"/>
+                </effect>
+            </ImageView>
+
+            <VBox alignment="CENTER" spacing="20.0"
+                  style="-fx-background-color: rgba(0,0,0,0.6); -fx-background-radius: 10; -fx-padding: 40;">
+                <Label fx:id="userLabel" text="Welcome, user"
+                       style="-fx-text-fill: white; -fx-font-size: 26; -fx-font-weight: bold;"/>
+                <PasswordField fx:id="passwordField" promptText="Enter password" maxWidth="350" prefHeight="40"
+                               style="-fx-font-size: 18;"/>
+                <Button text="Sign In" onAction="#handleLogin" maxWidth="350" prefHeight="40"
+                        style="-fx-font-size: 18;"/>
+            </VBox>
+
+        </StackPane>
+    </center>
+
+</BorderPane>
