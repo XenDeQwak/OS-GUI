@@ -1,20 +1,22 @@
 package com.xen.oslab;
 
+import java.io.IOException;
+import com.xen.oslab.managers.LoginManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-
 public class OS extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(OS.class.getResource("os-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("log-in.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
-        stage.setTitle("OS GUI!");
+
+        LoginManager loginManager = fxmlLoader.getController();
+        loginManager.setStage(stage);
         stage.setScene(scene);
-        stage.setMaximized(true);
+        stage.setTitle("OS GUI!");
         stage.show();
     }
 
