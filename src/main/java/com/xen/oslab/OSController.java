@@ -17,6 +17,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.scene.control.Label;
+import javafx.util.Duration;
+
 public class OSController {
     @FXML
     private Pane desktopPane;
@@ -70,6 +77,25 @@ public class OSController {
         desktopPane.heightProperty().addListener((obs, oldV, newV) -> applySavedBackground());
         applySavedBackground();
         addPowerButton();
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS); 
+
+        Label clockLabel = new Label();
+        clockLabel.setStyle("-fx-text-fill: white; -fx-font-size: 11px; -fx-padding: 4 10 4 10;");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE, MMM d yyyy - hh:mm a");
+
+        Timeline clock = new Timeline(
+            new KeyFrame(Duration.ZERO, e -> {
+                LocalDateTime now = LocalDateTime.now();
+                clockLabel.setText(now.format(formatter));
+            }),
+            new KeyFrame(Duration.seconds(1))
+        );
+        clock.setCycleCount(Timeline.INDEFINITE);
+        clock.play();
+
+        taskbar.getChildren().addAll(spacer, clockLabel);
     }
 
     private void applySavedBackground() {
@@ -129,6 +155,5 @@ public class OSController {
         powerBtn.setStyle("-fx-background-color: transparent;");
         powerBtn.setOnAction(e -> System.exit(0));
         taskbar.getChildren().add(powerBtn);
-        taskbar.setAlignment(Pos.CENTER_LEFT);
     }
 }
