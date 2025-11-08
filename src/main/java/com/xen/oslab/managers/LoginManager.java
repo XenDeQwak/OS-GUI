@@ -42,9 +42,8 @@ public class LoginManager {
         }
     }
 
-    @FXML
+        @FXML
     public void initialize() {
-        // Load background
         String bgFile = bgStorage.loadBackground();
         if (bgFile != null && !bgFile.isEmpty()) {
             String path = "/com/xen/oslab/backgrounds/" + bgFile;
@@ -66,9 +65,9 @@ public class LoginManager {
                 obj.keySet().forEach(userListView.getItems()::add);
 
                 if (!obj.keySet().isEmpty()) {
-                    currentUser = obj.keySet().iterator().next();
-                    userLabel.setText("Welcome, " + currentUser);
                     userListView.getSelectionModel().select(0);
+                    currentUser = userListView.getSelectionModel().getSelectedItem();
+                    userLabel.setText("Welcome, " + currentUser);
                 } else {
                     userLabel.setText("No users yet");
                 }
@@ -76,7 +75,16 @@ public class LoginManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }   
+
+        // Add selection listener to update currentUser
+        userListView.getSelectionModel().selectedItemProperty().addListener((obs, oldUser, newUser) -> {
+            if (newUser != null) {
+                currentUser = newUser;
+                userLabel.setText("Welcome, " + currentUser);
+            }
+        });
+    }
+
 
     @FXML
     private void handleLogin() {
