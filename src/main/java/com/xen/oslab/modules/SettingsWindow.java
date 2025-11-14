@@ -6,7 +6,9 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -16,6 +18,8 @@ public class SettingsWindow {
     private Stage stage;
     private StackPane contentArea;
     private Button deviceBtn, networkBtn, personalizeBtn;
+    private boolean wifiConnected = true;
+    private String selectedNetwork = "Home_WiFi_5G";
 
     public SettingsWindow() {
         stage = new Stage();
@@ -288,22 +292,153 @@ public class SettingsWindow {
     private void showNetworkSettings() {
         SettingsNavUtils.setActiveButton(networkBtn, deviceBtn, networkBtn, personalizeBtn);
 
-        VBox panel = new VBox(15);
+        VBox panel = new VBox(20);
         panel.setPadding(new Insets(20));
-        panel.setStyle("-fx-text-fill: white;");
 
         Label title = new Label("Network Settings");
-        title.setStyle("-fx-font-size: 50px; -fx-font-weight: bold; -fx-text-fill: #ffffff;");
+        title.setStyle("-fx-font-size: 50px; -fx-font-weight: bold; -fx-text-fill: white;");
 
-        Label wifi = new Label("Wi-Fi");
-        Label ethernet = new Label("Ethernet");
-        Label proxy = new Label("Proxy");
+        VBox wifiSection = new VBox(10);
+        Label wifiTitle = new Label("Wi-Fi");
+        wifiTitle.setStyle("-fx-font-size: 28px; -fx-text-fill: white;");
 
-        panel.getChildren().addAll(title, wifi, ethernet, proxy);
+        Label wifiStatus = new Label();
+        updateWifiStatusLabel(wifiStatus);
+
+        Button toggleWifiBtn = new Button(wifiConnected ? "Turn Off" : "Turn On");
+        toggleWifiBtn.setStyle("""
+            -fx-background-color: #3b82f6;
+            -fx-text-fill: white;
+            -fx-font-size: 18;
+            -fx-padding: 10 20;
+        """);
+        toggleWifiBtn.setOnAction(e -> {
+            wifiConnected = !wifiConnected;
+            toggleWifiBtn.setText(wifiConnected ? "Turn Off" : "Turn On");
+            updateWifiStatusLabel(wifiStatus);
+        });
+
+        Label nearbyTitle = new Label("Available Networks");
+        nearbyTitle.setStyle("-fx-font-size: 24px; -fx-text-fill: white;");
+
+        VBox networksList = new VBox(10);
+        String[] fakeNetworks = {
+                "Home_WiFi_5G",
+                "CoffeeShop_Free",
+                "LibraryNet",
+                "XEN-OS-Dev-AP"
+        };
+
+        for (String network : fakeNetworks) {
+            Button networkBtn = new Button("📶  " + network);
+            networkBtn.setPrefWidth(300);
+            networkBtn.setAlignment(Pos.CENTER_LEFT);
+
+            networkBtn.setStyle(getNetworkButtonStyle(network.equals(selectedNetwork)));
+
+            networkBtn.setOnAction(e -> {
+                selectedNetwork = network;
+                refreshNetworkList(networksList, fakeNetworks);
+                updateWifiStatusLabel(wifiStatus);
+            });
+
+            networksList.getChildren().add(networkBtn);
+        }
+
+        wifiSection.getChildren().addAll(wifiTitle, wifiStatus, toggleWifiBtn, nearbyTitle, networksList);
+
+        VBox ipSection = new VBox(10);
+        Label ipTitle = new Label("IP Address");
+        ipTitle.setStyle("-fx-font-size: 28px; -fx-text-fill: white;");
+        TextField ipField = new TextField("192.168.1.14");
+        styleNetworkField(ipField);
+        ipSection.getChildren().addAll(ipTitle, ipField);
+
+        VBox dnsSection = new VBox(10);
+        Label dnsTitle = new Label("DNS Server");
+        dnsTitle.setStyle("-fx-font-size: 28px; -fx-text-fill: white;");
+        TextField dnsField = new TextField("8.8.8.8");
+        styleNetworkField(dnsField);
+        dnsSection.getChildren().addAll(dnsTitle, dnsField);
+
+        VBox gatewaySection = new VBox(10);
+        Label gatewayTitle = new Label("Gateway");
+        gatewayTitle.setStyle("-fx-font-size: 28px; -fx-text-fill: white;");
+        TextField gatewayField = new TextField("192.168.1.1");
+        styleNetworkField(gatewayField);
+        gatewaySection.getChildren().addAll(gatewayTitle, gatewayField);
+
+        panel.getChildren().addAll(
+                title,
+                wifiSection,
+                ipSection,
+                dnsSection,
+                gatewaySection
+        );
+
+        ScrollPane scroll = new ScrollPane(panel);
+        scroll.setFitToWidth(true);
+        scroll.setStyle("-fx-background: #505050; -fx-border-color: transparent;");
 
         contentArea.getChildren().clear();
-        contentArea.getChildren().add(panel);
+        contentArea.getChildren().add(scroll);
     }
+
+    private void refreshNetworkList(VBox networksList, String[] networks) {
+        networksList.getChildren().clear();
+        for (String net : networks) {
+            Button btn = new Button("📶  " + net);
+            btn.setPrefWidth(300);
+            btn.setAlignment(Pos.CENTER_LEFT);
+            btn.setStyle(getNetworkButtonStyle(net.equals(selectedNetwork)));
+            btn.setOnAction(e -> {
+                selectedNetwork = net;
+                refreshNetworkList(networksList, networks);
+            });
+            networksList.getChildren().add(btn);
+        }
+    }
+
+    private String getNetworkButtonStyle(boolean selected) {
+        if (selected) {
+            return """
+                -fx-background-color: #1e90ff;
+                -fx-text-fill: white;
+                -fx-font-size: 20;
+                -fx-padding: 10;
+                -fx-background-radius: 8;
+                -fx-border-radius: 8;
+            """;
+        }
+        return """
+            -fx-background-color: #3a3a3a;
+            -fx-text-fill: white;
+            -fx-font-size: 20;
+            -fx-padding: 10;
+            -fx-background-radius: 8;
+            -fx-border-radius: 8;
+        """;
+    }
+
+    private void updateWifiStatusLabel(Label label) {
+        String icon = wifiConnected ? "📶 (Connected)" : "📡 (Disconnected)";
+        label.setText("Status: " + icon + " — " + selectedNetwork);
+        label.setStyle("-fx-text-fill: white; -fx-font-size: 22px;");
+    }
+
+    private void styleNetworkField(TextField field) {
+        field.setStyle("""
+            -fx-background-color: #3a3a3a;
+            -fx-text-fill: white;
+            -fx-font-size: 20;
+            -fx-padding: 8;
+            -fx-background-radius: 8;
+            -fx-border-radius: 8;
+            -fx-border-color: #555;
+        """);
+        field.setPrefWidth(300);
+    }
+    
 
     private void showPersonalizeSettings() {
         SettingsNavUtils.setActiveButton(personalizeBtn, deviceBtn, networkBtn, personalizeBtn);
