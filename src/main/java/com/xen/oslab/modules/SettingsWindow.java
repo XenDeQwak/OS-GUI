@@ -20,6 +20,8 @@ public class SettingsWindow {
     private Button deviceBtn, networkBtn, personalizeBtn;
     private boolean wifiConnected = true;
     private String selectedNetwork = "Home_WiFi_5G";
+    public static String currentIP = "192.168.1.14";
+
 
     public SettingsWindow() {
         stage = new Stage();
@@ -351,6 +353,10 @@ public class SettingsWindow {
         Label ipTitle = new Label("IP Address");
         ipTitle.setStyle("-fx-font-size: 28px; -fx-text-fill: white;");
         TextField ipField = new TextField("192.168.1.14");
+        ipField.textProperty().addListener((obs, oldVal, newVal) -> {
+        currentIP = newVal;
+     });
+
         styleNetworkField(ipField);
         ipSection.getChildren().addAll(ipTitle, ipField);
 

@@ -66,8 +66,11 @@ public class CLIWindow {
     }
 
     private String runCommand(String cmd) {
-        switch (cmd.toLowerCase()) {
-            case "help": return "Commands: help, time, clear, exit";
+        cmd = cmd.trim();
+        String command = cmd.split("\\s+")[0].toLowerCase(); 
+        
+        switch (command) { 
+            case "help": return "Commands: help, time, clear, exit, ping";
             case "time": return LocalDateTime.now().toString();
             case "clear": 
                 console.setText(prompt); 
@@ -75,9 +78,45 @@ public class CLIWindow {
             case "exit": 
                 root.getScene().getWindow().hide(); 
                 return "";
+            case "ping":
+                return handlePing(cmd);
             default: return "Unknown command: " + cmd;
         }
     }
+
+    private String handlePing(String cmd) {
+        String[] parts = cmd.split("\\s+");
+        if (parts.length != 2) return "Usage: ping <IP>";
+        
+        String ipToPing = parts[1];
+        String currentIP = SettingsWindow.currentIP;
+
+        new Thread(() -> {
+            for (int i = 1; i <= 4; i++) {
+                String reply;
+                if (ipToPing.equals(currentIP)) {
+                    reply = "Reply from " + ipToPing + ": bytes=32 time=" + (10 + i*5) + "ms TTL=64";
+                } else {
+                    reply = "Request timed out.";
+                }
+
+                String finalReply = reply;
+                javafx.application.Platform.runLater(() -> {
+                    console.appendText("\n" + finalReply);
+                });
+
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            javafx.application.Platform.runLater(() -> console.appendText("\n" + prompt));
+        }).start();
+
+        return "";
+    }
+
 
     public VBox getNode() {
         return root;
