@@ -4,7 +4,7 @@ import javafx.scene.control.Button;
 
 public class SettingsNavUtils {
     private static final String DEFAULT_STYLE = 
-        "-fx-background-color: #3c3c3c;" +
+        "-fx-background-color: #454545;" +
         "-fx-text-fill: white;" +
         "-fx-font-size: 14px;" +
         "-fx-border-width: 0;" +
