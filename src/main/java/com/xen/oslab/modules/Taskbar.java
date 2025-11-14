@@ -2,6 +2,9 @@ package com.xen.oslab.modules;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+
+import com.xen.oslab.managers.FolderManager;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.geometry.Insets;
@@ -21,8 +24,10 @@ import javafx.util.Duration;
 
 public class Taskbar {
     private HBox bar = new HBox();
+    private final FolderManager folderManager;
 
-    public Taskbar(Runnable onSettings, Runnable onPower) {
+    public Taskbar(FolderManager folderManager, Runnable onSettings, Runnable onPower) {
+        this.folderManager = folderManager;
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
@@ -118,6 +123,11 @@ public class Taskbar {
     }
 
     private void openExplorer() {
+        FileExplorer explorer = new FileExplorer(folderManager);
+        Stage stage = new Stage();
+        stage.setScene(new Scene(explorer.getNode(), 800, 500));
+        stage.setTitle("File Explorer");
+        stage.show();
 
     }
 

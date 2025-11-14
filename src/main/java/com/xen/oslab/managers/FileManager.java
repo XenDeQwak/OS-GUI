@@ -83,7 +83,7 @@ public class FileManager {
     private void attachCommonEvents(File file) {
         ContextMenu menu = FileEventUtils.createRenameContextMenu(file, () -> {
             if (file.getParentFolder() != null) file.getParentFolder().getStorage().saveFolder(file.getParentFolder());
-            else storage.saveFile(file);
+            //else storage.saveFile(file);
         });
 
         file.setOnMouseClicked(e -> {
@@ -93,7 +93,7 @@ public class FileManager {
             } else if (e.getClickCount() == 2 && e.getButton() == MouseButton.PRIMARY) {
                 FileEditor.open(file, () -> {
                     if (file.getParentFolder() != null) file.getParentFolder().getStorage().saveFolder(file.getParentFolder());
-                    else storage.saveFile(file);
+                    //else storage.saveFile(file);
                 });
             }
         });

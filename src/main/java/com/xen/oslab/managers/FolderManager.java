@@ -1,5 +1,8 @@
 package com.xen.oslab.managers;
 
+import java.util.List;
+
+import com.xen.oslab.managers.storage.FileStorageManager;
 import com.xen.oslab.managers.storage.FolderStorageManager;
 import com.xen.oslab.modules.FolderWindow;
 import com.xen.oslab.objects.Folder;
@@ -17,7 +20,7 @@ public class FolderManager {
     private final boolean[][] occupied;
     private final double cellW, cellH;
     private final FileManager fileManager;
-    private final FolderStorageManager fsm;
+    public final FolderStorageManager fsm;
 
     public FolderManager(Pane desktopPane, SnapOnGrid snapper, boolean[][] occupied, double cellW, double cellH, FileManager fileManager, FolderStorageManager fsm) {
         this.desktopPane = desktopPane;
@@ -139,5 +142,16 @@ public class FolderManager {
         }
 
         fsm.deleteFolder(folder);
+    }
+
+    public List<Folder> getRootFolders() {
+        return desktopPane.getChildren().stream()
+            .filter(n -> n instanceof Folder)
+            .map(n -> (Folder) n)
+            .toList();
+    }
+
+    public FileStorageManager getFileStorage() {
+        return new FileStorageManager();
     }
 }

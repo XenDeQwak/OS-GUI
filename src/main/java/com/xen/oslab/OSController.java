@@ -76,13 +76,14 @@ public class OSController {
         ), bgMenu);
 
         fileStorage.loadAll(desktopPane, fileManager);
-        folderStorage.loadAll(folderManager);
+        folderManager.fsm.loadAll(folderManager);
 
         desktopPane.widthProperty().addListener((obs, oldV, newV) -> applySavedBackground());
         desktopPane.heightProperty().addListener((obs, oldV, newV) -> applySavedBackground());
         applySavedBackground();
 
         Taskbar tb = new Taskbar(
+            folderManager,
             () -> settingsManager.openSettings(),
             () -> System.exit(0)
         );
