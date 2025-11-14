@@ -23,6 +23,7 @@ public class FileExplorer {
     private final FolderManager folderManager;
 
     public FileExplorer(FolderManager folderManager) {
+
         this.folderManager = folderManager;
 
         folderTree = new TreeView<>();
@@ -67,7 +68,6 @@ public class FileExplorer {
         root.getItems().addAll(folderTree, filePane);
         root.setDividerPositions(0.3);
     }
-
 
     private TreeItem<Folder> buildTree(Folder folder) {
         TreeItem<Folder> node = new TreeItem<>(folder);

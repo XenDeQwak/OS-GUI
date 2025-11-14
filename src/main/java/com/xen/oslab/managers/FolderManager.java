@@ -1,12 +1,10 @@
 package com.xen.oslab.managers;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.xen.oslab.managers.storage.FileStorageManager;
 import com.xen.oslab.managers.storage.FolderStorageManager;
 import com.xen.oslab.modules.FolderWindow;
-import com.xen.oslab.objects.File;
 import com.xen.oslab.objects.Folder;
 import com.xen.oslab.utils.FolderEventUtils;
 import com.xen.oslab.utils.SnapOnGrid;
@@ -22,9 +20,7 @@ public class FolderManager {
     private final boolean[][] occupied;
     private final double cellW, cellH;
     private final FileManager fileManager;
-    private Folder desktopFolder;
     public final FolderStorageManager fsm;
-    private final List<Folder> rootFolders = new ArrayList<>();
 
     public FolderManager(Pane desktopPane, SnapOnGrid snapper, boolean[][] occupied, double cellW, double cellH, FileManager fileManager, FolderStorageManager fsm) {
         this.desktopPane = desktopPane;
@@ -34,7 +30,6 @@ public class FolderManager {
         this.cellH = cellH;
         this.fileManager = fileManager;
         this.fsm = fsm;
-        initStaticFolders();
     }
 
     public void createFolder(String name, int row, int col) {
@@ -42,12 +37,8 @@ public class FolderManager {
         folder.setLayoutX(col * cellW);
         folder.setLayoutY(row * cellH);
         folder.setUserData(new int[]{row, col});
-        folder.setSystemFolder(false);
-
-        desktopFolder.addFolder(folder);
-        folder.setParentFolder(desktopFolder);
-
         occupied[row][col] = true;
+
         attachEvents(folder, false);
         addToDesktop(folder);
     }
@@ -56,8 +47,6 @@ public class FolderManager {
         Folder folder = new Folder(name);
         folder.setLayoutX(x);
         folder.setLayoutY(y);
-        folder.setSystemFolder(false);
-
         attachEvents(folder, true);
         addToDesktop(folder);
         return folder;
@@ -65,7 +54,7 @@ public class FolderManager {
 
     private void addToDesktop(Folder folder) {
         markOccupied(folder);
-        if (!desktopPane.getChildren().contains(folder) && !folder.isSystemFolder()) desktopPane.getChildren().add(folder);
+        if (!desktopPane.getChildren().contains(folder)) desktopPane.getChildren().add(folder);
     }
 
     private void attachEvents(Folder folder, boolean isLoaded) {
@@ -155,43 +144,11 @@ public class FolderManager {
         fsm.deleteFolder(folder);
     }
 
-    private void initStaticFolders() {
-        desktopFolder = new Folder("Desktop");
-        desktopFolder.setSystemFolder(true);
-
-        for (var node : desktopPane.getChildren()) {
-            if (node instanceof File file) {
-                desktopFolder.addFile(file);
-                file.setParentFolder(desktopFolder);
-            }
-            if (node instanceof Folder folder) {
-                desktopFolder.addFolder(folder);
-            }
-        }
-
-        rootFolders.add(desktopFolder);
-
-        addStaticFolder("Downloads");
-        addStaticFolder("Documents");
-    }
-
-    private void addStaticFolder(String name) {
-        if (getFolderByName(name) == null) {
-            Folder folder = new Folder(name);
-            folder.setSystemFolder(true);
-            rootFolders.add(folder);
-        }
-    }
-
-    public Folder getFolderByName(String name) {
-        return rootFolders.stream()
-                .filter(f -> f.getFolderName().equalsIgnoreCase(name))
-                .findFirst()
-                .orElse(null);
-    }
-
     public List<Folder> getRootFolders() {
-        return rootFolders;
+        return desktopPane.getChildren().stream()
+            .filter(n -> n instanceof Folder)
+            .map(n -> (Folder) n)
+            .toList();
     }
 
     public FileStorageManager getFileStorage() {
