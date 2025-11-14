@@ -3,22 +3,18 @@ package com.xen.oslab.modules;
 import com.xen.oslab.managers.FolderManager;
 import com.xen.oslab.objects.File;
 import com.xen.oslab.objects.Folder;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
-import javafx.scene.layout.TilePane;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.layout.VBox;
-import javafx.geometry.Pos;
+import javafx.scene.control.*;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 public class FileExplorer {
 
     private final SplitPane root = new SplitPane();
     private final TreeView<Folder> folderTree;
-    private final TilePane filePane;
+    private final TableView<Object> fileTable;
 
     private final FolderManager folderManager;
 
@@ -36,7 +32,7 @@ public class FileExplorer {
 
         folderTree.setRoot(virtualRoot);
 
-        folderTree.setCellFactory(tv -> new javafx.scene.control.TreeCell<>() {
+        folderTree.setCellFactory(tv -> new TreeCell<>() {
             @Override
             protected void updateItem(Folder item, boolean empty) {
                 super.updateItem(item, empty);
@@ -44,28 +40,75 @@ public class FileExplorer {
             }
         });
 
-        filePane = new TilePane();
-        filePane.setHgap(10);
-        filePane.setVgap(10);
+        fileTable = new TableView<>();
+        fileTable.setColumnResizePolicy(param -> {
+            double tableWidth = fileTable.getWidth() - 2;
+            double totalColumns = fileTable.getColumns().size();
+            if (totalColumns == 0) return true;
 
-        folderTree.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) -> {
-            filePane.getChildren().clear();
-            if (newSel == null) return;
-
-            Folder folder = newSel.getValue();
-
-            for (File f : folder.getFiles()) {
-                Button fileBtn = new Button(f.getFileName());
-                fileBtn.setOnAction(e -> openFile(f));
-                filePane.getChildren().add(fileBtn);
+            double widthPerColumn = tableWidth / totalColumns;
+            for (TableColumn<?, ?> col : fileTable.getColumns()) {
+                col.setPrefWidth(widthPerColumn);
             }
-
-            for (Folder sub : folder.getSubFolders()) {
-                filePane.getChildren().add(createFolderNode(sub));
-            }
+            return true;
         });
 
-        root.getItems().addAll(folderTree, filePane);
+
+        TableColumn<Object, String> typeCol = new TableColumn<>("Type");
+        typeCol.setCellValueFactory(cellData -> {
+            Object obj = cellData.getValue();
+            if (obj instanceof File) return new SimpleStringProperty("File");
+            if (obj instanceof Folder) return new SimpleStringProperty("Folder");
+            return new SimpleStringProperty("");
+        });
+
+        TableColumn<Object, String> nameCol = new TableColumn<>("Name");
+        nameCol.setCellValueFactory(cellData -> {
+            Object obj = cellData.getValue();
+            if (obj instanceof File) return new SimpleStringProperty(((File) obj).getFileName());
+            if (obj instanceof Folder) return new SimpleStringProperty(((Folder) obj).getFolderName());
+            return new SimpleStringProperty("");
+        });
+
+        TableColumn<Object, String> pathCol = new TableColumn<>("Path");
+        pathCol.setCellValueFactory(cellData -> {
+            Object obj = cellData.getValue();
+            if (obj instanceof File file) {
+                return new SimpleStringProperty(buildPath(file.getParentFolder()) + "/" + file.getFileName());
+            }
+            if (obj instanceof Folder folder) {
+                return new SimpleStringProperty(buildPath(folder));
+            }
+            return new SimpleStringProperty("");
+        });
+
+
+
+        fileTable.getColumns().addAll(typeCol, nameCol, pathCol);
+
+        fileTable.setRowFactory(tv -> {
+            TableRow<Object> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    Object item = row.getItem();
+                    if (item instanceof File) openFile((File) item);
+                    if (item instanceof Folder) openSubFolderWindow((Folder) item);
+                }
+            });
+            return row;
+        });
+
+        folderTree.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) -> {
+            ObservableList<Object> items = FXCollections.observableArrayList();
+            if (newSel != null) {
+                Folder folder = newSel.getValue();
+                items.addAll(folder.getSubFolders());
+                items.addAll(folder.getFiles());
+            }
+            fileTable.setItems(items);
+        });
+
+        root.getItems().addAll(folderTree, fileTable);
         root.setDividerPositions(0.3);
     }
 
@@ -78,21 +121,6 @@ public class FileExplorer {
 
         node.setExpanded(true);
         return node;
-    }
-
-    private VBox createFolderNode(Folder folder) {
-        VBox box = new VBox();
-        box.setAlignment(Pos.CENTER);
-        box.setSpacing(5);
-
-        Label nameLabel = new Label(folder.getFolderName());
-        nameLabel.setStyle("-fx-text-fill: white; -fx-font-size: 12;");
-
-        Button openBtn = new Button("Open");
-        openBtn.setOnAction(e -> openSubFolderWindow(folder));
-
-        box.getChildren().addAll(nameLabel, openBtn);
-        return box;
     }
 
     private void openSubFolderWindow(Folder folder) {
@@ -127,6 +155,17 @@ public class FileExplorer {
                 folderManager.getFileStorage().saveFile(file);
             }
         });
+    }
+
+    private String buildPath(Folder folder) {
+        if (folder == null) return "root";
+        StringBuilder path = new StringBuilder(folder.getFolderName());
+        Folder parent = folder.getParentFolder();
+        while (parent != null) {
+            path.insert(0, parent.getFolderName() + "/");
+            parent = parent.getParentFolder();
+        }
+        return "root/" + path.toString();
     }
 
 
