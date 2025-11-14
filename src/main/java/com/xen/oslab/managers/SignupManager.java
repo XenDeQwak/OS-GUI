@@ -36,14 +36,12 @@ public class SignupManager {
     private Stage stage;
     private final BackgroundStorageManager bgStorage = new BackgroundStorageManager();
     private static final Path USERS_FILE = Paths.get("desktop_files/users.json");
-
     public void setStage(Stage stage) {
         this.stage = stage;
     }
 
     @FXML
     public void initialize() {
-        // Load OS background
         String bgFile = bgStorage.loadBackground();
         if (bgFile != null && !bgFile.isEmpty()) {
             try {
@@ -57,12 +55,16 @@ public class SignupManager {
             }
         }
 
-        // Password strength listener
         passwordField.textProperty().addListener((obs, oldVal, newVal) -> updatePasswordStrength(newVal));
 
         styleField(usernameField);
         styleField(passwordField);
         styleField(confirmPasswordField);
+    }
+
+    @FXML
+    private void handleReturn() {
+        goToLogin(); 
     }
 
     private void styleField(TextField field) {
@@ -136,7 +138,6 @@ public class SignupManager {
                 writer.write(users.toString());
             }
 
-            // Refresh in-memory user storage
             UserStorageManager.reloadUsers();
 
             showInfo("Account created successfully!");
