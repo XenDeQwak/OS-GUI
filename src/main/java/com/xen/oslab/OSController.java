@@ -1,26 +1,39 @@
 package com.xen.oslab;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
-import com.xen.oslab.managers.*;
+
+import com.xen.oslab.managers.DesktopMenuManager;
+import com.xen.oslab.managers.FileManager;
+import com.xen.oslab.managers.FolderManager;
+import com.xen.oslab.managers.GridManager;
+import com.xen.oslab.managers.SettingsManager;
 import com.xen.oslab.managers.storage.BackgroundStorageManager;
 import com.xen.oslab.managers.storage.FileStorageManager;
 import com.xen.oslab.managers.storage.FolderStorageManager;
 import com.xen.oslab.objects.File;
 import com.xen.oslab.objects.Folder;
 import com.xen.oslab.utils.SnapOnGrid;
+
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.scene.control.Label;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.util.Duration;
 
 public class OSController {
@@ -36,6 +49,7 @@ public class OSController {
     private FolderStorageManager folderStorage;
     private FolderManager folderManager;
     private BackgroundStorageManager bgStorage;
+    private SettingsManager settingsManager;
 
     private final int cols = 10;
     private final int rows = 5;
@@ -52,6 +66,7 @@ public class OSController {
         fileManager = new FileManager(desktopPane, snapper, occupied, cellW, cellH);
         folderManager = new FolderManager(desktopPane, snapper, occupied, cellW, cellH, fileManager, folderStorage);
         bgStorage = new BackgroundStorageManager();
+        settingsManager = new SettingsManager();
 
         Menu bgMenu = new Menu("Change Background");
         String[] backgrounds = {"sky.jpg", "mountain.jpg", "city.jpg"};
@@ -75,6 +90,7 @@ public class OSController {
         desktopPane.heightProperty().addListener((obs, oldV, newV) -> applySavedBackground());
         applySavedBackground();
         addPowerButton();
+        addSettingsButton();
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS); 
@@ -154,4 +170,20 @@ public class OSController {
         powerBtn.setOnAction(e -> System.exit(0));
         taskbar.getChildren().add(powerBtn);
     }
+
+    private void addSettingsButton() {
+    if (taskbar == null) return;
+    
+    Image icon = new Image(getClass().getResource("/com/xen/oslab/icons/settings.png").toExternalForm());
+    ImageView iconView = new ImageView(icon);
+    iconView.setFitWidth(24);
+    iconView.setFitHeight(24);
+    
+    Button settingsBtn = new Button();
+    settingsBtn.setGraphic(iconView);
+    settingsBtn.setStyle("-fx-background-color: transparent;");
+    settingsBtn.setOnAction(e -> settingsManager.openSettings());
+    
+    taskbar.getChildren().add(settingsBtn);
+}
 }
