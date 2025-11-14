@@ -1,0 +1,25 @@
+{
+  "name": "Desktop",
+  "folderId": "54205d25-0b8e-49e9-9ecb-374a3b063b97",
+  "x": 0.0,
+  "y": 0.0,
+  "files": [],
+  "subfolders": [
+    {
+      "name": "New Folder 1",
+      "folderId": "5e2b3c45-6d18-4cc4-9d53-76099713eb93",
+      "parentId": "54205d25-0b8e-49e9-9ecb-374a3b063b97",
+      "x": 0.0,
+      "y": 0.0,
+      "files": [
+        {
+          "name": "New File",
+          "x": 0.0,
+          "y": 0.0,
+          "content": "Hello"
+        }
+      ],
+      "subfolders": []
+    }
+  ]
+}

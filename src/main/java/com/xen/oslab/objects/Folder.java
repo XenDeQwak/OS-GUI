@@ -24,6 +24,8 @@ public class Folder extends VBox {
     private TextField renameField;
     private Label label;
     private Folder parentFolder;
+    private boolean systemFolder = false;
+    private boolean deletable = true;
 
     public Folder(String name) {
         this.folderName = name;
@@ -122,4 +124,18 @@ public class Folder extends VBox {
     public void setFolderName(String folderName) {
         this.folderName = folderName;
     }
+
+    public void setSystemFolder(boolean value) {
+        this.systemFolder = value;
+        this.deletable = !value;
+    }
+
+    public boolean isSystemFolder() {
+        return systemFolder;
+    }
+
+    public boolean isDeletable() {
+        return deletable;
+    }
+
 }

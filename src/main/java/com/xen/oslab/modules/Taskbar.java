@@ -112,8 +112,6 @@ public class Taskbar {
         
     }
 
-    
-
     private void openCLI() {
         CLIWindow cli = new CLIWindow();
         Stage stage = new Stage();
