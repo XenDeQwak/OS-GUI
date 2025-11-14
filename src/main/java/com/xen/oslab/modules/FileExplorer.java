@@ -29,7 +29,6 @@ public class FileExplorer {
         for (Folder folder : folderManager.getRootFolders()) {
             virtualRoot.getChildren().add(buildTree(folder));
         }
-
         folderTree.setRoot(virtualRoot);
 
         folderTree.setCellFactory(tv -> new TreeCell<>() {
@@ -53,7 +52,6 @@ public class FileExplorer {
             return true;
         });
 
-
         TableColumn<Object, String> typeCol = new TableColumn<>("Type");
         typeCol.setCellValueFactory(cellData -> {
             Object obj = cellData.getValue();
@@ -65,24 +63,18 @@ public class FileExplorer {
         TableColumn<Object, String> nameCol = new TableColumn<>("Name");
         nameCol.setCellValueFactory(cellData -> {
             Object obj = cellData.getValue();
-            if (obj instanceof File) return new SimpleStringProperty(((File) obj).getFileName());
-            if (obj instanceof Folder) return new SimpleStringProperty(((Folder) obj).getFolderName());
+            if (obj instanceof File f) return new SimpleStringProperty(f.getFileName());
+            if (obj instanceof Folder folder) return new SimpleStringProperty(folder.getFolderName());
             return new SimpleStringProperty("");
         });
 
         TableColumn<Object, String> pathCol = new TableColumn<>("Path");
         pathCol.setCellValueFactory(cellData -> {
             Object obj = cellData.getValue();
-            if (obj instanceof File file) {
-                return new SimpleStringProperty(buildPath(file.getParentFolder()) + "/" + file.getFileName());
-            }
-            if (obj instanceof Folder folder) {
-                return new SimpleStringProperty(buildPath(folder));
-            }
+            if (obj instanceof File f) return new SimpleStringProperty(buildPath(f.getParentFolder()) + "/" + f.getFileName());
+            if (obj instanceof Folder folder) return new SimpleStringProperty(buildPath(folder));
             return new SimpleStringProperty("");
         });
-
-
 
         fileTable.getColumns().addAll(typeCol, nameCol, pathCol);
 
@@ -91,8 +83,8 @@ public class FileExplorer {
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     Object item = row.getItem();
-                    if (item instanceof File) openFile((File) item);
-                    if (item instanceof Folder) openSubFolderWindow((Folder) item);
+                    if (item instanceof File f) openFile(f);
+                    if (item instanceof Folder folder) openSubFolderWindow(folder);
                 }
             });
             return row;
@@ -102,6 +94,8 @@ public class FileExplorer {
             ObservableList<Object> items = FXCollections.observableArrayList();
             if (newSel != null) {
                 Folder folder = newSel.getValue();
+                // assign parentFolder to all files before showing in table
+                for (File f : folder.getFiles()) f.setParentFolder(folder);
                 items.addAll(folder.getSubFolders());
                 items.addAll(folder.getFiles());
             }
@@ -114,20 +108,14 @@ public class FileExplorer {
 
     private TreeItem<Folder> buildTree(Folder folder) {
         TreeItem<Folder> node = new TreeItem<>(folder);
-
-        for (Folder sub : folder.getSubFolders()) {
-            node.getChildren().add(buildTree(sub));
-        }
-
+        for (Folder sub : folder.getSubFolders()) node.getChildren().add(buildTree(sub));
         node.setExpanded(true);
         return node;
     }
 
     private void openSubFolderWindow(Folder folder) {
         FileExplorer explorer = new FileExplorer(folderManager);
-
         TreeItem<Folder> itemToSelect = findTreeItem(explorer.folderTree.getRoot(), folder);
-
         if (itemToSelect != null)
             explorer.folderTree.getSelectionModel().select(itemToSelect);
 
@@ -140,7 +128,6 @@ public class FileExplorer {
     private TreeItem<Folder> findTreeItem(TreeItem<Folder> root, Folder target) {
         for (TreeItem<Folder> child : root.getChildren()) {
             if (child.getValue() == target) return child;
-
             TreeItem<Folder> found = findTreeItem(child, target);
             if (found != null) return found;
         }
@@ -148,6 +135,11 @@ public class FileExplorer {
     }
 
     private void openFile(File file) {
+        if (file.getParentFolder() == null) {
+            TreeItem<Folder> selected = folderTree.getSelectionModel().getSelectedItem();
+            if (selected != null) file.setParentFolder(selected.getValue());
+        }
+
         FileEditor.open(file, () -> {
             if (file.getParentFolder() != null) {
                 file.getParentFolder().getStorage().saveFolder(file.getParentFolder());
@@ -167,7 +159,6 @@ public class FileExplorer {
         }
         return "root/" + path.toString();
     }
-
 
     public SplitPane getNode() {
         return root;
