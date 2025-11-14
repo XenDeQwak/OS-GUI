@@ -12,7 +12,6 @@ import javafx.stage.Stage;
 
 public class SettingsWindow {
     private Stage stage;
-    private Scene scene; 
     private StackPane contentArea;
     private Button deviceBtn, networkBtn, personalizeBtn;
 
@@ -54,6 +53,7 @@ public class SettingsWindow {
         sidebar.getChildren().addAll(deviceBtn, networkBtn, personalizeBtn);
         return sidebar;
     }
+
     private Button createNavButton(String text){
         Button btn = new Button(text);
         btn.setPrefWidth(100);
@@ -76,6 +76,7 @@ public class SettingsWindow {
         });
         return btn;
     }
+    
     private void highlightButton(Button activeBtn) {
         deviceBtn.setStyle(
             "-fx-background-color: #3c3c3c;" +

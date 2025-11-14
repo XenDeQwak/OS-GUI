@@ -1,7 +1,5 @@
 package com.xen.oslab;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import com.xen.oslab.managers.DesktopMenuManager;
@@ -12,19 +10,15 @@ import com.xen.oslab.managers.SettingsManager;
 import com.xen.oslab.managers.storage.BackgroundStorageManager;
 import com.xen.oslab.managers.storage.FileStorageManager;
 import com.xen.oslab.managers.storage.FolderStorageManager;
+import com.xen.oslab.modules.Taskbar;
 import com.xen.oslab.objects.File;
 import com.xen.oslab.objects.Folder;
 import com.xen.oslab.utils.SnapOnGrid;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
@@ -32,9 +26,6 @@ import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.util.Duration;
 
 public class OSController {
     @FXML
@@ -78,6 +69,7 @@ public class OSController {
             });
             bgMenu.getItems().add(item);
         }
+        
         new DesktopMenuManager(desktopPane, Map.of(
             "New File", this::addNewFile,
             "New Folder", this::addNewFolder
@@ -89,27 +81,12 @@ public class OSController {
         desktopPane.widthProperty().addListener((obs, oldV, newV) -> applySavedBackground());
         desktopPane.heightProperty().addListener((obs, oldV, newV) -> applySavedBackground());
         applySavedBackground();
-        addPowerButton();
-        addSettingsButton();
 
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS); 
-
-        Label clockLabel = new Label();
-        clockLabel.setStyle("-fx-text-fill: white; -fx-font-size: 11px; -fx-padding: 4 10 4 10;");
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE, MMM d yyyy - hh:mm a");
-
-        Timeline clock = new Timeline(
-            new KeyFrame(Duration.ZERO, e -> {
-                LocalDateTime now = LocalDateTime.now();
-                clockLabel.setText(now.format(formatter));
-            }),
-            new KeyFrame(Duration.seconds(1))
+        Taskbar tb = new Taskbar(
+            () -> settingsManager.openSettings(),
+            () -> System.exit(0)
         );
-        clock.setCycleCount(Timeline.INDEFINITE);
-        clock.play();
-
-        taskbar.getChildren().addAll(spacer, clockLabel);
+        taskbar.getChildren().setAll(tb.getNode().getChildren());
     }
 
     private void applySavedBackground() {
@@ -156,34 +133,4 @@ public class OSController {
         int num = getNextFolderNumber();
         folderManager.createFolder("New Folder " + num, free[0], free[1]);
     }
-    
-
-    private void addPowerButton() {
-        if (taskbar == null) return;
-        Image icon = new Image(getClass().getResource("/com/xen/oslab/icons/power.png").toExternalForm());
-        ImageView iconView = new ImageView(icon);
-        iconView.setFitWidth(24);
-        iconView.setFitHeight(24);
-        Button powerBtn = new Button();
-        powerBtn.setGraphic(iconView);
-        powerBtn.setStyle("-fx-background-color: transparent;");
-        powerBtn.setOnAction(e -> System.exit(0));
-        taskbar.getChildren().add(powerBtn);
-    }
-
-    private void addSettingsButton() {
-    if (taskbar == null) return;
-    
-    Image icon = new Image(getClass().getResource("/com/xen/oslab/icons/settings.png").toExternalForm());
-    ImageView iconView = new ImageView(icon);
-    iconView.setFitWidth(24);
-    iconView.setFitHeight(24);
-    
-    Button settingsBtn = new Button();
-    settingsBtn.setGraphic(iconView);
-    settingsBtn.setStyle("-fx-background-color: transparent;");
-    settingsBtn.setOnAction(e -> settingsManager.openSettings());
-    
-    taskbar.getChildren().add(settingsBtn);
-}
 }
