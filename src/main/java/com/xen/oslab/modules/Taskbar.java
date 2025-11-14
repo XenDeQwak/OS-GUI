@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import com.xen.oslab.managers.FolderManager;
+import com.xen.oslab.managers.SettingsManager;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -24,14 +25,44 @@ import javafx.util.Duration;
 
 public class Taskbar {
     private HBox bar = new HBox();
+    private HBox windowSection = new HBox(5);
     private final FolderManager folderManager;
+    private final SettingsManager settingsManager;
 
-    public Taskbar(FolderManager folderManager, Runnable onSettings, Runnable onPower) {
+    public Taskbar(FolderManager folderManager, Runnable onSettings, Runnable onPower, SettingsManager settingsManager) {
         this.folderManager = folderManager;
+        this.settingsManager = settingsManager;
+
+        windowSection.setAlignment(Pos.CENTER);
+        
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        bar.getChildren().addAll(addPowerBtn(onPower), addCLIButton(), addExplorerButton(), spacer, addSettingsBtn(onSettings), addClock());
+        bar.getChildren().addAll(addPowerBtn(onPower), addCLIButton(), addExplorerButton(), windowSection, spacer, addSettingsBtn(onSettings), addClock());
+    }
+
+    public void registerWindow(Stage stage, String title, String iconPath) {
+        ImageView icon = new ImageView(new Image(getClass().getResource(iconPath).toExternalForm()));
+        icon.setFitWidth(24);
+        icon.setFitHeight(24);
+
+        Button btn = new Button();
+        btn.setGraphic(icon);
+        btn.setStyle("""
+            -fx-background-color: #3a3a3a;
+            -fx-background-radius: 5;
+        """);
+        btn.setCursor(Cursor.HAND);
+
+        btn.setOnAction(e -> {
+            stage.toFront();
+            stage.requestFocus();
+        });
+
+        windowSection.getChildren().add(btn);
+
+        stage.setOnCloseRequest(e -> windowSection.getChildren().remove(btn));
+        
     }
 
     private Button addSettingsBtn(Runnable onSettings) {
@@ -42,10 +73,15 @@ public class Taskbar {
         settingsBtn.setGraphic(settingsIcon);
         settingsBtn.setStyle("-fx-background-color: transparent;");
         settingsBtn.setCursor(Cursor.HAND);
-        settingsBtn.setOnAction(e -> onSettings.run());
+
+        settingsBtn.setOnAction(e -> {
+        Stage s = settingsManager.openSettings();
+        registerWindow(s, "Settings", "/com/xen/oslab/icons/settings.png");
+        });
 
         return settingsBtn;
     }
+
 
     private Button addPowerBtn(Runnable onPower) {
         Button powerBtn = new Button();
@@ -118,7 +154,10 @@ public class Taskbar {
         stage.setScene(new Scene(cli.getNode(), 600, 400));
         stage.setTitle("Terminal");
         stage.show();
+
+        registerWindow(stage, "Terminal", "/com/xen/oslab/icons/terminal.png");
     }
+
 
     private void openExplorer() {
         FileExplorer explorer = new FileExplorer(folderManager);
@@ -127,6 +166,7 @@ public class Taskbar {
         stage.setTitle("File Explorer");
         stage.show();
 
+        registerWindow(stage, "Explorer", "/com/xen/oslab/icons/folder.png");
     }
 
 

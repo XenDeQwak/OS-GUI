@@ -58,6 +58,7 @@ public class OSController {
         folderManager = new FolderManager(desktopPane, snapper, occupied, cellW, cellH, fileManager, folderStorage);
         bgStorage = new BackgroundStorageManager();
         settingsManager = new SettingsManager();
+        
 
         Menu bgMenu = new Menu("Change Background");
         String[] backgrounds = {"sky.jpg", "mountain.jpg", "city.jpg"};
@@ -85,7 +86,7 @@ public class OSController {
         Taskbar tb = new Taskbar(
             folderManager,
             () -> settingsManager.openSettings(),
-            () -> System.exit(0)
+            () -> System.exit(0), settingsManager
         );
         taskbar.getChildren().setAll(tb.getNode().getChildren());
     }

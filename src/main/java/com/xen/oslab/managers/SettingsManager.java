@@ -1,19 +1,22 @@
 package com.xen.oslab.managers;
 
 import com.xen.oslab.modules.SettingsWindow;
+import javafx.stage.Stage;
 
 public class SettingsManager {
     private SettingsWindow settingsWindow;
 
-    public void openSettings() {
+    public Stage openSettings() {
         if (settingsWindow == null) {
             settingsWindow = new SettingsWindow();
         }
-       settingsWindow.show();
+
+        settingsWindow.show();
+        return settingsWindow.getStage();
     }
 
-    public void closeSettings(){
-        if(settingsWindow != null){
+    public void closeSettings() {
+        if (settingsWindow != null) {
             settingsWindow.close();
         }
     }
