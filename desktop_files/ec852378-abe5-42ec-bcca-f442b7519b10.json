@@ -1,0 +1,51 @@
+{
+  "name": "New Folder 2",
+  "folderId": "ec852378-abe5-42ec-bcca-f442b7519b10",
+  "x": 240.0,
+  "y": 100.0,
+  "files": [
+    {
+      "name": "New File",
+      "x": 0.0,
+      "y": 0.0,
+      "content": ""
+    }
+  ],
+  "subfolders": [
+    {
+      "name": "New Folder",
+      "folderId": "ae7ce0ef-919c-482e-9b50-9e8b1f232dd8",
+      "parentId": "ec852378-abe5-42ec-bcca-f442b7519b10",
+      "x": 100.0,
+      "y": 0.0,
+      "files": [],
+      "subfolders": [
+        {
+          "name": "New Folder",
+          "folderId": "e695410b-68a2-4a38-b9b9-c76e3a5f2340",
+          "parentId": "ae7ce0ef-919c-482e-9b50-9e8b1f232dd8",
+          "x": 0.0,
+          "y": 0.0,
+          "files": [],
+          "subfolders": []
+        },
+        {
+          "name": "New Folder",
+          "folderId": "61034f13-4f51-4b56-875e-bcd68db0b96f",
+          "parentId": "ae7ce0ef-919c-482e-9b50-9e8b1f232dd8",
+          "x": 100.0,
+          "y": 0.0,
+          "files": [
+            {
+              "name": "New File",
+              "x": 0.0,
+              "y": 0.0,
+              "content": "hello file in a folder"
+            }
+          ],
+          "subfolders": []
+        }
+      ]
+    }
+  ]
+}
