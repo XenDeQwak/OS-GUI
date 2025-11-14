@@ -64,7 +64,8 @@ public class FolderManager {
         ContextMenu menu = FolderEventUtils.createRenameContextMenu(
             folder, 
             () -> fsm.saveFolder(folder),
-            () -> deleteFolder(folder));
+            () -> deleteFolder(folder)
+        );
 
         folder.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
             if (e.getButton() == MouseButton.SECONDARY) {
