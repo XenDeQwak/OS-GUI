@@ -18,7 +18,8 @@ public class SettingsWindow {
     private Stage stage;
     private StackPane contentArea;
     private Button deviceBtn, networkBtn, personalizeBtn;
-    private boolean wifiConnected = true;
+    public static boolean wifiConnected = true;
+    private final java.util.List<String[]> deviceListData = new java.util.ArrayList<>();
     private String selectedNetwork = "Home_WiFi_5G";
     public static String currentIP = "192.168.1.14";
 
@@ -29,6 +30,11 @@ public class SettingsWindow {
         stage.setWidth(800);
         stage.setHeight(800);
 
+        deviceListData.add(new String[]{"USB Flash Drive", "Storage", "Enabled"});
+        deviceListData.add(new String[]{"Bluetooth Mouse", "Input", "Enabled"});
+        deviceListData.add(new String[]{"Wireless Keyboard", "Input", "Disabled"});
+        deviceListData.add(new String[]{"Printer HP 2055", "Peripheral", "Enabled"});
+        deviceListData.add(new String[]{"Webcam 1080p", "Camera", "Enabled"});
 
         BorderPane root = new BorderPane();
         root.setStyle("-fx-background-color: #505050");
@@ -125,6 +131,12 @@ public class SettingsWindow {
 
         contentArea.getChildren().clear();
         contentArea.getChildren().add(panel);
+
+        Label devices = new Label("Devices");
+        devices.setStyle(basicStyle);
+        devices.setOnMouseClicked(e -> showDevicesManager());
+        devices.setMaxWidth(Double.MAX_VALUE);
+        panel.getChildren().add(devices);
     }
 
     private void showDisplaySettings() {
@@ -290,6 +302,93 @@ public class SettingsWindow {
         contentArea.getChildren().clear();
         contentArea.getChildren().add(panel);
     }
+    
+    private void showDevicesManager() {
+    VBox panel = new VBox(20);
+    panel.setPadding(new Insets(20));
+
+    Label title = new Label("Connected Devices");
+    title.setStyle("-fx-font-size: 50px; -fx-font-weight: bold; -fx-text-fill: white;");
+
+    VBox deviceList = new VBox(15);
+
+    for (String[] dev : deviceListData) {
+        String devName = dev[0];
+        String devType = dev[1];
+        String devStatus = dev[2];
+
+        Button btn = new Button("🖥  " + devName + "  —  " + devType + "  (" + devStatus + ")");
+        btn.setPrefWidth(500);
+        btn.setAlignment(Pos.CENTER_LEFT);
+        btn.setStyle("""
+            -fx-background-color: #3a3a3a;
+            -fx-text-fill: white;
+            -fx-font-size: 20;
+            -fx-padding: 10;
+            -fx-background-radius: 8;
+        """);
+
+        btn.setOnAction(evt -> showDeviceDetails(devName, devType, devStatus));
+
+        deviceList.getChildren().add(btn);
+    }
+
+    ScrollPane scroll = new ScrollPane(deviceList);
+    scroll.setFitToWidth(true);
+    scroll.setStyle("-fx-background: #505050; -fx-border-color: transparent;");
+
+    panel.getChildren().addAll(title, scroll);
+
+    contentArea.getChildren().clear();
+    contentArea.getChildren().add(panel);
+}
+
+
+    private void showDeviceDetails(String name, String type, String status) {
+        VBox panel = new VBox(20);
+        panel.setPadding(new Insets(20));
+
+        Label title = new Label(name);
+        title.setStyle("-fx-font-size: 45px; -fx-font-weight: bold; -fx-text-fill: white;");
+
+        Label typeLbl = new Label("Type: " + type);
+        typeLbl.setStyle("-fx-text-fill: white; -fx-font-size: 24px;");
+
+        Label statusLbl = new Label("Status: " + status);
+        statusLbl.setStyle("-fx-text-fill: white; -fx-font-size: 24px;");
+
+        Button toggleBtn = new Button(status.equals("Enabled") ? "Disable" : "Enable");
+        toggleBtn.setStyle("""
+            -fx-background-color: #3b82f6;
+            -fx-text-fill: white;
+            -fx-font-size: 20;
+            -fx-padding: 10 20;
+        """);
+
+        toggleBtn.setOnAction(e -> {
+            boolean isEnabled = statusLbl.getText().contains("Enabled");
+            statusLbl.setText("Status: " + (isEnabled ? "Disabled" : "Enabled"));
+            toggleBtn.setText(isEnabled ? "Enable" : "Disable");
+        });
+
+        Button removeBtn = new Button("Remove Device");
+        removeBtn.setStyle("""
+            -fx-background-color: #d9534f;
+            -fx-text-fill: white;
+            -fx-font-size: 20;
+            -fx-padding: 10 20;
+        """);
+
+        removeBtn.setOnAction(e -> {
+        deviceListData.removeIf(d -> d[0].equals(name));
+        showDevicesManager();
+        });
+
+        panel.getChildren().addAll(title, typeLbl, statusLbl, toggleBtn, removeBtn);
+
+        contentArea.getChildren().clear();
+        contentArea.getChildren().add(panel);
+    }
 
     private void showNetworkSettings() {
         SettingsNavUtils.setActiveButton(networkBtn, deviceBtn, networkBtn, personalizeBtn);
@@ -307,7 +406,7 @@ public class SettingsWindow {
         Label wifiStatus = new Label();
         updateWifiStatusLabel(wifiStatus);
 
-        Button toggleWifiBtn = new Button(wifiConnected ? "Turn Off" : "Turn On");
+        Button toggleWifiBtn = new Button(SettingsWindow.wifiConnected ? "Turn Off" : "Turn On");
         toggleWifiBtn.setStyle("""
             -fx-background-color: #3b82f6;
             -fx-text-fill: white;
@@ -315,10 +414,11 @@ public class SettingsWindow {
             -fx-padding: 10 20;
         """);
         toggleWifiBtn.setOnAction(e -> {
-            wifiConnected = !wifiConnected;
-            toggleWifiBtn.setText(wifiConnected ? "Turn Off" : "Turn On");
-            updateWifiStatusLabel(wifiStatus);
-        });
+        SettingsWindow.wifiConnected = !SettingsWindow.wifiConnected;
+        toggleWifiBtn.setText(SettingsWindow.wifiConnected ? "Turn Off" : "Turn On");
+        updateWifiStatusLabel(wifiStatus);
+      });
+
 
         Label nearbyTitle = new Label("Available Networks");
         nearbyTitle.setStyle("-fx-font-size: 24px; -fx-text-fill: white;");
@@ -427,7 +527,9 @@ public class SettingsWindow {
     }
 
     private void updateWifiStatusLabel(Label label) {
-        String icon = wifiConnected ? "📶 (Connected)" : "📡 (Disconnected)";
+        String icon = SettingsWindow.wifiConnected
+        ? "📶 (Connected)"
+        : "📡 (Disconnected)";
         label.setText("Status: " + icon + " — " + selectedNetwork);
         label.setStyle("-fx-text-fill: white; -fx-font-size: 22px;");
     }

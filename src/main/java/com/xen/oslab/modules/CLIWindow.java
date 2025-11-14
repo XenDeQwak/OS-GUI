@@ -94,7 +94,9 @@ public class CLIWindow {
         new Thread(() -> {
             for (int i = 1; i <= 4; i++) {
                 String reply;
-                if (ipToPing.equals(currentIP)) {
+                if (!SettingsWindow.wifiConnected) {
+                reply = "Request timed out.";
+                } else if (ipToPing.equals(currentIP)) {
                     reply = "Reply from " + ipToPing + ": bytes=32 time=" + (10 + i*5) + "ms TTL=64";
                 } else {
                     reply = "Request timed out.";
