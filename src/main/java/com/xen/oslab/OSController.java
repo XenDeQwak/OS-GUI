@@ -69,7 +69,7 @@ public class OSController {
             });
             bgMenu.getItems().add(item);
         }
-        
+
         new DesktopMenuManager(desktopPane, Map.of(
             "New File", this::addNewFile,
             "New Folder", this::addNewFolder
