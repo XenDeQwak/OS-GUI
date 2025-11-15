@@ -6,6 +6,7 @@ import com.xen.oslab.managers.DesktopMenuManager;
 import com.xen.oslab.managers.FileManager;
 import com.xen.oslab.managers.FolderManager;
 import com.xen.oslab.managers.GridManager;
+import com.xen.oslab.managers.LoginManager;
 import com.xen.oslab.managers.SettingsManager;
 import com.xen.oslab.managers.storage.BackgroundStorageManager;
 import com.xen.oslab.managers.storage.FileStorageManager;
@@ -41,7 +42,9 @@ public class OSController {
     private FolderManager folderManager;
     private BackgroundStorageManager bgStorage;
     private SettingsManager settingsManager;
+    private LoginManager loginManager;
 
+    private static OSController instance;
     private final int cols = 10;
     private final int rows = 5;
     private final double cellW = 80;
@@ -58,7 +61,8 @@ public class OSController {
         folderManager = new FolderManager(desktopPane, snapper, occupied, cellW, cellH, fileManager, folderStorage);
         bgStorage = new BackgroundStorageManager();
         settingsManager = new SettingsManager();
-        
+        loginManager = new LoginManager();
+        instance = this;
 
         Menu bgMenu = new Menu("Change Background");
         String[] backgrounds = {"sky.jpg", "mountain.jpg", "city.jpg"};
@@ -84,9 +88,11 @@ public class OSController {
         applySavedBackground();
 
         Taskbar tb = new Taskbar(
-            folderManager,
+            loginManager,        
+            folderManager,      
             () -> settingsManager.openSettings(),
-            () -> System.exit(0), settingsManager
+            () -> System.exit(0),  
+            settingsManager     
         );
         taskbar.getChildren().setAll(tb.getNode().getChildren());
     }
@@ -98,7 +104,7 @@ public class OSController {
         }
     }
 
-    private void setDesktopBackground(String bgFile) {
+    public void setDesktopBackground(String bgFile) {
         Image img = new Image(getClass().getResource("/com/xen/oslab/backgrounds/" + bgFile).toExternalForm(),
                 desktopPane.getWidth(), desktopPane.getHeight(), false, true);
         BackgroundImage bg = new BackgroundImage(img,
@@ -134,5 +140,14 @@ public class OSController {
         if (free.length == 0) return;
         int num = getNextFolderNumber();
         folderManager.createFolder("New Folder " + num, free[0], free[1]);
+    }
+
+    
+    public static OSController getInstance() {
+        return instance;
+    }
+
+    public BackgroundStorageManager getBgStorage() {
+        return bgStorage;
     }
 }

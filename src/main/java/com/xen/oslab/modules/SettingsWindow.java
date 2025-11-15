@@ -1,5 +1,6 @@
 package com.xen.oslab.modules;
 
+import com.xen.oslab.OSController;
 import com.xen.oslab.utils.SettingsNavUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -9,7 +10,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -556,17 +560,48 @@ public class SettingsWindow {
 
         Label title = new Label("Personalization Settings");
         title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #ffffff;");
-        panel.setStyle("-fx-text-fill: white;");
 
-        Label theme = new Label("Theme");
-        Label wallpaper = new Label("Wallpaper");
-        Label colors = new Label("Colors");
+        panel.getChildren().add(title);
 
-        panel.getChildren().addAll(title, theme, wallpaper, colors);
+        Label bgLabel = new Label("Change Background");
+        bgLabel.setStyle("-fx-text-fill: white; -fx-font-size: 20px;");
+
+        HBox bgOptions = new HBox(20);
+        bgOptions.setPadding(new Insets(10));
+
+        String[] backgrounds = {"sky.jpg", "mountain.jpg", "city.jpg"};
+
+        for (String bg : backgrounds) {
+            VBox bgBox = new VBox(5);
+            bgBox.setAlignment(Pos.CENTER);
+
+            ImageView preview = new ImageView(new Image(getClass().getResource(
+                "/com/xen/oslab/backgrounds/" + bg).toExternalForm(), 150, 100, true, true));
+            preview.setStyle("-fx-border-color: white; -fx-border-width: 2;");
+
+            Button selectBtn = new Button("Select");
+            selectBtn.setStyle("""
+                -fx-background-color: #3b82f6;
+                -fx-text-fill: white;
+                -fx-font-size: 14px;
+            """);
+
+            selectBtn.setOnAction(e -> {
+                OSController.getInstance().setDesktopBackground(bg);
+                OSController.getInstance().getBgStorage().saveBackground(bg);
+            });
+
+            bgBox.getChildren().addAll(preview, selectBtn);
+            bgOptions.getChildren().add(bgBox);
+        }
+
+        panel.getChildren().addAll(bgLabel, bgOptions);
 
         contentArea.getChildren().clear();
         contentArea.getChildren().add(panel);
     }
+
+
 
     public void show() {
         stage.show();

@@ -1,23 +1,28 @@
 package com.xen.oslab.managers;
 
-import com.xen.oslab.managers.storage.UserStorageManager;
-import com.xen.oslab.managers.storage.BackgroundStorageManager;
-import com.google.gson.*;
-import javafx.application.Platform;
-import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.StackPane;
-import javafx.stage.Stage;
-import javafx.scene.Scene;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.xen.oslab.managers.storage.BackgroundStorageManager;
+import com.xen.oslab.managers.storage.UserStorageManager;
+
+import javafx.application.Platform;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.PasswordField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 
 public class LoginManager {
 
@@ -76,7 +81,6 @@ public class LoginManager {
             e.printStackTrace();
         }
 
-        // Add selection listener to update currentUser
         userListView.getSelectionModel().selectedItemProperty().addListener((obs, oldUser, newUser) -> {
             if (newUser != null) {
                 currentUser = newUser;
@@ -84,7 +88,6 @@ public class LoginManager {
             }
         });
     }
-
 
     @FXML
     private void handleLogin() {
@@ -124,14 +127,35 @@ public class LoginManager {
             showError("Failed to open sign-up.");
         }
     }
+    public void handleSignOff() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/xen/oslab/log-in.fxml"));
+            Parent loginRoot = loader.load();
+
+            LoginManager loginController = loader.getController();
+            loginController.setStage(stage);
+
+            Scene loginScene = new Scene(loginRoot);
+            stage.setScene(loginScene);
+            stage.setTitle("Log In");
+            stage.setMaximized(true);
+            stage.centerOnScreen();
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showError("Failed to return to log-in screen.");
+        }
+    }
 
     private void launchOS() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/xen/oslab/os-view.fxml"));
-            Parent root = loader.load();
-            stage.setScene(new Scene(root));
+            Parent osRoot = loader.load();
+
+            Scene scene = new Scene(osRoot);
+            stage.setScene(scene);
             stage.setMaximized(true);
-            stage.centerOnScreen();
+            stage.setFullScreen(false);
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();
