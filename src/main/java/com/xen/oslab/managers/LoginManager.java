@@ -155,11 +155,8 @@ public class LoginManager {
 
             OSController controller = loader.getController();
             controller.setStage(stage);
-            
-            stage.setScene(new Scene(root));
-            Parent osRoot = loader.load();
 
-            Scene scene = new Scene(osRoot);
+            Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.setMaximized(true);
             stage.setFullScreen(false);
