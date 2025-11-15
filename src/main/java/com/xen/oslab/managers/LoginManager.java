@@ -7,10 +7,7 @@ import java.nio.file.Paths;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-<<<<<<< HEAD
 import com.xen.oslab.OSController;
-=======
->>>>>>> 386378f5736789ae2f5c56a85f9116df078aea0e
 import com.xen.oslab.managers.storage.BackgroundStorageManager;
 import com.xen.oslab.managers.storage.UserStorageManager;
 
@@ -154,19 +151,16 @@ public class LoginManager {
     private void launchOS() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/xen/oslab/os-view.fxml"));
-<<<<<<< HEAD
             Parent root = loader.load();
 
             OSController controller = loader.getController();
             controller.setStage(stage);
             
             stage.setScene(new Scene(root));
-=======
             Parent osRoot = loader.load();
 
             Scene scene = new Scene(osRoot);
             stage.setScene(scene);
->>>>>>> 386378f5736789ae2f5c56a85f9116df078aea0e
             stage.setMaximized(true);
             stage.setFullScreen(false);
             stage.show();

@@ -158,7 +158,6 @@ public class OSController {
         folderManager.createFolder("New Folder " + num, free[0], free[1]);
     }
 
-<<<<<<< HEAD
     private void clearSelection() {
         for (javafx.scene.Node node : selectedItems) {
             node.setStyle(null);
@@ -250,7 +249,6 @@ public class OSController {
     private final String SELECTION_BOX_STYLE = "-fx-fill: rgba(0, 120, 215, 0.3); -fx-stroke: rgba(0, 120, 215, 0.7); -fx-stroke-width: 1;";
     private final String SELECTED_ICON_STYLE = "-fx-effect: dropshadow(gaussian, rgba(40, 147, 255, 0.8), 15, 0.6, 0, 0);";
 
-=======
     
     public static OSController getInstance() {
         return instance;
@@ -259,5 +257,4 @@ public class OSController {
     public BackgroundStorageManager getBgStorage() {
         return bgStorage;
     }
->>>>>>> 386378f5736789ae2f5c56a85f9116df078aea0e
 }
