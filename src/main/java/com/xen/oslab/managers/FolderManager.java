@@ -2,6 +2,7 @@ package com.xen.oslab.managers;
 
 import java.util.List;
 
+import com.xen.oslab.OSController;
 import com.xen.oslab.managers.storage.FileStorageManager;
 import com.xen.oslab.managers.storage.FolderStorageManager;
 import com.xen.oslab.modules.FolderWindow;
@@ -23,8 +24,9 @@ public class FolderManager {
     private final FileManager fileManager;
     public final FolderStorageManager fsm;
     private final java.util.List<javafx.scene.Node> selectedItems;
+    private final OSController controller;
 
-    public FolderManager(Pane desktopPane, SnapOnGrid snapper, boolean[][] occupied, double cellW, double cellH, FileManager fileManager, FolderStorageManager fsm, java.util.List<javafx.scene.Node> selectedItems) {
+    public FolderManager(OSController controller, Pane desktopPane, SnapOnGrid snapper, boolean[][] occupied, double cellW, double cellH, FileManager fileManager, FolderStorageManager fsm, java.util.List<javafx.scene.Node> selectedItems) {
         this.selectedItems = selectedItems;
         this.desktopPane = desktopPane;
         this.snapper = snapper;
@@ -33,6 +35,7 @@ public class FolderManager {
         this.cellH = cellH;
         this.fileManager = fileManager;
         this.fsm = fsm;
+        this.controller = controller;
     }
 
     public void createFolder(String name, int row, int col) {
@@ -115,6 +118,8 @@ public class FolderManager {
 
     private void handleFolderPress(Folder folder, MouseEvent e) {
         if (e.getButton() == MouseButton.PRIMARY) {
+            controller.setSingleSelection(folder);
+
             int[] pos = (int[]) folder.getUserData();
             if (pos != null) occupied[pos[0]][pos[1]] = false;
             folder.setUserData(null);

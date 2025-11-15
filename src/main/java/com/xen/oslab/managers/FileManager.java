@@ -1,5 +1,6 @@
 package com.xen.oslab.managers;
 
+import com.xen.oslab.OSController;
 import com.xen.oslab.managers.storage.FileStorageManager;
 import com.xen.oslab.modules.FileEditor;
 import com.xen.oslab.objects.File;
@@ -21,14 +22,18 @@ public class FileManager {
     private final double cellH;
     private final boolean[][] occupied;
     private final FileStorageManager storage;
+    private final OSController controller;
 
-    public FileManager(Pane desktopPane, SnapOnGrid snapper, boolean[][] occupied, double cellW, double cellH) {
+
+    
+    public FileManager(OSController controller, Pane desktopPane, SnapOnGrid snapper, boolean[][] occupied, double cellW, double cellH) {
         this.desktopPane = desktopPane;
         this.snapper = snapper;
         this.occupied = occupied;
         this.cellW = cellW;
         this.cellH = cellH;
         this.storage = new FileStorageManager();
+        this.controller = controller;
     }
 
     public void createFile(String name, int row, int col) {
@@ -53,6 +58,7 @@ public class FileManager {
     }
 
     private void handlePress(File file) {
+        controller.setSingleSelection(file);
         int[] pos = (int[]) file.getUserData();
         if (pos != null) occupied[pos[0]][pos[1]] = false;
         file.setUserData(null);

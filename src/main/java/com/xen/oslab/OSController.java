@@ -63,8 +63,8 @@ public class OSController {
         snapper = new SnapOnGrid(grid);
         fileStorage = new FileStorageManager();
         folderStorage = new FolderStorageManager();
-        fileManager = new FileManager(desktopPane, snapper, occupied, cellW, cellH);
-        folderManager = new FolderManager(desktopPane, snapper, occupied, cellW, cellH, fileManager, folderStorage, selectedItems);
+        fileManager = new FileManager(this, desktopPane, snapper, occupied, cellW, cellH);
+        folderManager = new FolderManager(this, desktopPane, snapper, occupied, cellW, cellH, fileManager, folderStorage, selectedItems);
         bgStorage = new BackgroundStorageManager();
         settingsManager = new SettingsManager();
         loginManager = new LoginManager();
@@ -243,6 +243,12 @@ public class OSController {
             selectionRectangle = null;
         }
     }
+    public void setSingleSelection(javafx.scene.Node node) {
+        clearSelection();
+        selectedItems.add(node);
+        node.setStyle(SELECTED_ICON_STYLE);
+    }
+
     
 
     private final java.util.List<javafx.scene.Node> selectedItems = new java.util.ArrayList<>();
