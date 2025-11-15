@@ -7,7 +7,10 @@ import java.nio.file.Paths;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+<<<<<<< HEAD
 import com.xen.oslab.OSController;
+=======
+>>>>>>> 386378f5736789ae2f5c56a85f9116df078aea0e
 import com.xen.oslab.managers.storage.BackgroundStorageManager;
 import com.xen.oslab.managers.storage.UserStorageManager;
 
@@ -82,7 +85,6 @@ public class LoginManager {
             e.printStackTrace();
         }
 
-        // Add selection listener to update currentUser
         userListView.getSelectionModel().selectedItemProperty().addListener((obs, oldUser, newUser) -> {
             if (newUser != null) {
                 currentUser = newUser;
@@ -90,7 +92,6 @@ public class LoginManager {
             }
         });
     }
-
 
     @FXML
     private void handleLogin() {
@@ -130,18 +131,44 @@ public class LoginManager {
             showError("Failed to open sign-up.");
         }
     }
+    public void handleSignOff() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/xen/oslab/log-in.fxml"));
+            Parent loginRoot = loader.load();
+
+            LoginManager loginController = loader.getController();
+            loginController.setStage(stage);
+
+            Scene loginScene = new Scene(loginRoot);
+            stage.setScene(loginScene);
+            stage.setTitle("Log In");
+            stage.setMaximized(true);
+            stage.centerOnScreen();
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showError("Failed to return to log-in screen.");
+        }
+    }
 
     private void launchOS() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/xen/oslab/os-view.fxml"));
+<<<<<<< HEAD
             Parent root = loader.load();
 
             OSController controller = loader.getController();
             controller.setStage(stage);
             
             stage.setScene(new Scene(root));
+=======
+            Parent osRoot = loader.load();
+
+            Scene scene = new Scene(osRoot);
+            stage.setScene(scene);
+>>>>>>> 386378f5736789ae2f5c56a85f9116df078aea0e
             stage.setMaximized(true);
-            stage.centerOnScreen();
+            stage.setFullScreen(false);
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();

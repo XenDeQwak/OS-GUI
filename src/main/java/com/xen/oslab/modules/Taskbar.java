@@ -4,12 +4,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import com.xen.oslab.managers.FolderManager;
+import com.xen.oslab.managers.LoginManager;
 import com.xen.oslab.managers.SettingsManager;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Side;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -22,14 +24,19 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.application.Platform;
 
 public class Taskbar {
     private HBox bar = new HBox();
     private HBox windowSection = new HBox(5);
+    private final LoginManager loginManager;
     private final FolderManager folderManager;
     private final SettingsManager settingsManager;
 
-    public Taskbar(FolderManager folderManager, Runnable onSettings, Runnable onPower, SettingsManager settingsManager) {
+    public Taskbar(LoginManager loginManager, FolderManager folderManager, Runnable onSettings, Runnable onPower, SettingsManager settingsManager) {
+        this.loginManager = loginManager;
         this.folderManager = folderManager;
         this.settingsManager = settingsManager;
 
@@ -38,7 +45,7 @@ public class Taskbar {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        bar.getChildren().addAll(addPowerBtn(onPower), addCLIButton(), addExplorerButton(), windowSection, spacer, addSettingsBtn(onSettings), addClock());
+        bar.getChildren().addAll(addPowerBtn(loginManager), addCLIButton(), addExplorerButton(), windowSection, spacer, addSettingsBtn(onSettings), addClock());
     }
 
     public void registerWindow(Stage stage, String title, String iconPath) {
@@ -83,7 +90,7 @@ public class Taskbar {
     }
 
 
-    private Button addPowerBtn(Runnable onPower) {
+    private Button addPowerBtn(LoginManager loginManager) {
         Button powerBtn = new Button();
         ImageView powerIcon = new ImageView(new Image(getClass().getResource("/com/xen/oslab/icons/power.png").toExternalForm()));
         powerIcon.setFitWidth(24);
@@ -91,8 +98,22 @@ public class Taskbar {
         powerBtn.setGraphic(powerIcon);
         powerBtn.setStyle("-fx-background-color: transparent;");
         powerBtn.setCursor(Cursor.HAND);
-        powerBtn.setOnAction(e -> onPower.run());
 
+        ContextMenu powerMenu = new ContextMenu();
+
+        MenuItem signOff = new MenuItem("Sign Off");
+        signOff.setOnAction(e -> {
+            Stage primaryStage = (Stage) powerBtn.getScene().getWindow();
+            loginManager.setStage(primaryStage);
+            loginManager.handleSignOff();
+        });
+
+        MenuItem shutdown = new MenuItem("Shutdown");
+        shutdown.setOnAction(e -> Platform.exit());
+
+        powerMenu.getItems().addAll(signOff, shutdown);
+
+        powerBtn.setOnAction(e -> powerMenu.show(powerBtn, Side.BOTTOM, 0, 5));
 
         return powerBtn;
     }

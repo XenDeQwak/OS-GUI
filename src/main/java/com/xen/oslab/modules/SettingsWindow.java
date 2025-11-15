@@ -1,5 +1,6 @@
 package com.xen.oslab.modules;
 
+import com.xen.oslab.OSController;
 import com.xen.oslab.utils.SettingsNavUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -9,7 +10,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -17,18 +21,26 @@ import javafx.stage.Stage;
 public class SettingsWindow {
     private Stage stage;
     private StackPane contentArea;
-    private Button deviceBtn, networkBtn, personalizeBtn;
+    private Button deviceBtn, networkBtn; //personalizeBtn;
     public static boolean wifiConnected = true;
     private final java.util.List<String[]> deviceListData = new java.util.ArrayList<>();
     private String selectedNetwork = "Home_WiFi_5G";
     public static String currentIP = "192.168.1.14";
 
+    private static final String BG_PRIMARY = "#1a1a1a";
+    private static final String BG_SECONDARY = "#242424";
+    private static final String BG_TERTIARY = "#2d2d2d";
+    private static final String ACCENT_BLUE = "#3b82f6";
+    private static final String ACCENT_CYAN = "#06b6d4";
+    private static final String TEXT_PRIMARY = "#ffffff";
+    private static final String TEXT_SECONDARY = "#a1a1aa";
+    private static final String HOVER_BG = "#3a3a3a";
 
     public SettingsWindow() {
         stage = new Stage();
         stage.setTitle("Settings");
-        stage.setWidth(800);
-        stage.setHeight(800);
+        stage.setWidth(900);
+        stage.setHeight(650);
 
         deviceListData.add(new String[]{"USB Flash Drive", "Storage", "Enabled"});
         deviceListData.add(new String[]{"Bluetooth Mouse", "Input", "Enabled"});
@@ -37,13 +49,14 @@ public class SettingsWindow {
         deviceListData.add(new String[]{"Webcam 1080p", "Camera", "Enabled"});
 
         BorderPane root = new BorderPane();
-        root.setStyle("-fx-background-color: #505050");
+        root.setStyle("-fx-background-color: " + BG_PRIMARY + ";");
 
         VBox sidebar = createSidebar();
         root.setLeft(sidebar);
 
         contentArea = new StackPane();
-        contentArea.setPadding(new Insets(20));
+        contentArea.setPadding(new Insets(30));
+        contentArea.setStyle("-fx-background-color: " + BG_PRIMARY + ";");
         root.setCenter(contentArea);
 
         showDeviceSettings();
@@ -53,520 +66,741 @@ public class SettingsWindow {
     }
 
     private VBox createSidebar() {
-        VBox sidebar = new VBox(20);
-        sidebar.setPadding(new Insets(10));
-        sidebar.setPrefHeight(180);
-        sidebar.setMinWidth(180);
-        sidebar.setStyle("-fx-background-color: #454545");
+        VBox sidebar = new VBox(10);
+        sidebar.setPadding(new Insets(20));
+        sidebar.setPrefWidth(200);
+        sidebar.setStyle("-fx-background-color: " + BG_SECONDARY + "; -fx-border-color: #333333; -fx-border-width: 0 1 0 0;");
 
-        deviceBtn = createNavButton("Device");
-        networkBtn = createNavButton("Network");
-        personalizeBtn = createNavButton("Personalize");
+        deviceBtn = createNavButton("⚙️ Device");
+        networkBtn = createNavButton("🌐 Network");
+        //personalizeBtn = createNavButton("🎨 Personalize");
+
+        deviceBtn.setStyle(deviceBtn.getStyle() + "-fx-background-color: transparent; -fx-border-width: 0; -fx-background-insets: 0; -fx-padding: 12 20 12 20;");
+        networkBtn.setStyle(networkBtn.getStyle() + "-fx-background-color: transparent; -fx-border-width: 0; -fx-background-insets: 0; -fx-padding: 12 20 12 20;");
+        //personalizeBtn.setStyle(personalizeBtn.getStyle() + "-fx-background-color: transparent; -fx-border-width: 0; -fx-background-insets: 0; -fx-padding: 12 20 12 20;");
 
         deviceBtn.setOnAction(e -> showDeviceSettings());
         networkBtn.setOnAction(e -> showNetworkSettings());
-        personalizeBtn.setOnAction(e -> showPersonalizeSettings());
+        //personalizeBtn.setOnAction(e -> showPersonalizeSettings());
 
-        sidebar.getChildren().addAll(deviceBtn, networkBtn, personalizeBtn);
+        sidebar.getChildren().addAll(deviceBtn, networkBtn);
         return sidebar;
     }
 
     private Button createNavButton(String text){
         Button btn = new Button(text);
-        btn.setPrefWidth(100);
         btn.setPrefHeight(50);
         btn.setMaxWidth(Double.MAX_VALUE);
         btn.setAlignment(Pos.CENTER_LEFT);
-        btn.setPadding(new Insets(10,20,10,20));
-        btn.setStyle(SettingsNavUtils.getDefaultButtonStyle());
+        btn.setPadding(new Insets(12, 20, 12, 20));
+        btn.setStyle("""
+            -fx-background-color: transparent;
+            -fx-text-fill: %s;
+            -fx-font-size: 16px;
+            -fx-font-weight: 500;
+            -fx-background-radius: 8;
+            -fx-cursor: hand;
+            -fx-border-width: 0;
+            -fx-border-color: transparent;
+            -fx-background-insets: 0;
+            -fx-focus-color: transparent;
+            -fx-faint-focus-color: transparent;
+        """.formatted(TEXT_SECONDARY));
 
         btn.setOnMouseEntered(e -> {
-            if(!btn.getStyle().contains("#505050")){
-                btn.setStyle(btn.getStyle() + "-fx-background-color: #454545;");
+            if(!btn.getStyle().contains(ACCENT_BLUE)){
+                btn.setStyle("""
+                    -fx-background-color: %s;
+                    -fx-text-fill: %s;
+                    -fx-font-size: 16px;
+                    -fx-font-weight: 500;
+                    -fx-background-radius: 8;
+                    -fx-cursor: hand;
+                    -fx-border-width: 0;
+                    -fx-scale-x: 1.02;
+                    -fx-scale-y: 1.02;
+                    -fx-border-color: transparent;
+                    -fx-background-insets: 0;
+                    -fx-focus-color: transparent;
+                    -fx-faint-focus-color: transparent;
+                """.formatted(HOVER_BG, TEXT_PRIMARY));
             }
         });
 
         btn.setOnMouseExited(e -> {
-            if(!btn.getStyle().contains("#505050")){
-                btn.setStyle(SettingsNavUtils.getDefaultButtonStyle());
+            if(!btn.getStyle().contains(ACCENT_BLUE)){
+                btn.setStyle("""
+                    -fx-background-color: transparent;
+                    -fx-text-fill: %s;
+                    -fx-font-size: 16px;
+                    -fx-font-weight: 500;
+                    -fx-background-radius: 8;
+                    -fx-cursor: hand;
+                    -fx-border-width: 0;
+                    -fx-scale-x: 1.0;
+                    -fx-scale-y: 1.0;
+                    -fx-border-color: transparent;
+                    -fx-background-insets: 0;
+                    -fx-focus-color: transparent;
+                    -fx-faint-focus-color: transparent;
+                """.formatted(TEXT_SECONDARY));
+            }
+        });
+
+        btn.setOnMousePressed(e -> {
+            if(!btn.getStyle().contains(ACCENT_BLUE)){
+                btn.setStyle("""
+                    -fx-background-color: %s;
+                    -fx-text-fill: %s;
+                    -fx-font-size: 16px;
+                    -fx-font-weight: 500;
+                    -fx-background-radius: 8;
+                    -fx-cursor: hand;
+                    -fx-border-width: 0;
+                    -fx-scale-x: 0.98;
+                    -fx-scale-y: 0.98;
+                    -fx-border-color: transparent;
+                    -fx-background-insets: 0;
+                    -fx-focus-color: transparent;
+                    -fx-faint-focus-color: transparent;
+                """.formatted(BG_TERTIARY, TEXT_PRIMARY));
+            }
+        });
+
+        btn.setOnMouseReleased(e -> {
+            if(!btn.getStyle().contains(ACCENT_BLUE)){
+                btn.setStyle("""
+                    -fx-background-color: %s;
+                    -fx-text-fill: %s;
+                    -fx-font-size: 16px;
+                    -fx-font-weight: 500;
+                    -fx-background-radius: 8;
+                    -fx-cursor: hand;
+                    -fx-border-width: 0;
+                    -fx-scale-x: 1.02;
+                    -fx-scale-y: 1.02;
+                    -fx-border-color: transparent;
+                    -fx-background-insets: 0;
+                    -fx-focus-color: transparent;
+                    -fx-faint-focus-color: transparent;
+                """.formatted(HOVER_BG, TEXT_PRIMARY));
             }
         });
 
         return btn;
     }
 
+    private void resetNavButton(Button btn) {
+        btn.setStyle("""
+            -fx-background-color: transparent;
+            -fx-text-fill: %s;
+            -fx-font-size: 16px;
+            -fx-font-weight: 500;
+            -fx-background-radius: 8;
+            -fx-cursor: hand;
+            -fx-border-width: 0;
+            -fx-border-color: transparent;
+            -fx-background-insets: 0;
+            -fx-focus-color: transparent;
+            -fx-faint-focus-color: transparent;
+        """.formatted(TEXT_SECONDARY));
+    }
+
     private void showDeviceSettings() {
-        SettingsNavUtils.setActiveButton(deviceBtn, deviceBtn, networkBtn, personalizeBtn);
+        SettingsNavUtils.setActiveButton(deviceBtn, deviceBtn, networkBtn);
+        
+        // Reset all buttons to default state
+        resetNavButton(deviceBtn);
+        resetNavButton(networkBtn);
+        //resetNavButton(personalizeBtn);
+        
+        // Set active button
+        deviceBtn.setStyle("""
+            -fx-background-color: %s;
+            -fx-text-fill: white;
+            -fx-font-size: 16px;
+            -fx-font-weight: 600;
+            -fx-background-radius: 8;
+            -fx-border-width: 0;
+            -fx-border-color: transparent;
+            -fx-background-insets: 0;
+            -fx-focus-color: transparent;
+            -fx-faint-focus-color: transparent;
+        """.formatted(ACCENT_BLUE));
 
         VBox panel = new VBox(15);
-        panel.setPadding(new Insets(20));
-        panel.setStyle("-fx-text-fill: white; -fx-font-size: 25px");
+        panel.setPadding(new Insets(0));
 
         Label title = new Label("Device Settings");
-        title.setStyle("-fx-font-size: 50px; -fx-font-weight: bold; -fx-text-fill: #ffffff;");
+        title.setStyle("-fx-font-size: 36px; -fx-font-weight: 700; -fx-text-fill: " + TEXT_PRIMARY + ";");
 
-        Label display = new Label("Display");
-        Label storage = new Label("Storage");
-        Label battery = new Label("Battery");
-        Label sound = new Label("Sound");
+        VBox optionsBox = new VBox(12);
+        optionsBox.setPadding(new Insets(20, 0, 0, 0));
 
-        String basicStyle = "-fx-text-fill: #ffffff; -fx-cursor: hand; -fx-padding: 14px;";
+        String[] options = {"💻 Display", "💾 Storage", "🔋 Battery", "🔊 Sound", "🖥️ Devices"};
+        Runnable[] actions = {
+            this::showDisplaySettings,
+            this::showStorageSettings,
+            this::showBatterySettings,
+            this::showSoundSettings,
+            this::showDevicesManager
+        };
 
-        display.setStyle(basicStyle);
-        storage.setStyle(basicStyle);
-        battery.setStyle(basicStyle);
-        sound.setStyle(basicStyle);
+        for (int i = 0; i < options.length; i++) {
+            Button optionBtn = createOptionButton(options[i]);
+            int index = i;
+            optionBtn.setOnAction(e -> actions[index].run());
+            optionsBox.getChildren().add(optionBtn);
+        }
 
-        display.setOnMouseClicked(e -> showDisplaySettings());
-        storage.setOnMouseClicked(e -> showStorageSettings());
-        battery.setOnMouseClicked(e -> showBatterySettings());
-        sound.setOnMouseClicked(e -> showSoundSettings());
-
-        display.setMaxWidth(Double.MAX_VALUE);
-        storage.setMaxWidth(Double.MAX_VALUE);
-        battery.setMaxWidth(Double.MAX_VALUE);
-        sound.setMaxWidth(Double.MAX_VALUE);
-
-        panel.getChildren().addAll(title, display, storage, battery, sound);
+        panel.getChildren().addAll(title, optionsBox);
 
         contentArea.getChildren().clear();
         contentArea.getChildren().add(panel);
+    }
 
-        Label devices = new Label("Devices");
-        devices.setStyle(basicStyle);
-        devices.setOnMouseClicked(e -> showDevicesManager());
-        devices.setMaxWidth(Double.MAX_VALUE);
-        panel.getChildren().add(devices);
+    private Button createOptionButton(String text) {
+        Button btn = new Button(text);
+        btn.setMaxWidth(Double.MAX_VALUE);
+        btn.setAlignment(Pos.CENTER_LEFT);
+        btn.setPadding(new Insets(18, 24, 18, 24));
+        btn.setStyle("""
+            -fx-background-color: %s;
+            -fx-text-fill: %s;
+            -fx-font-size: 18px;
+            -fx-font-weight: 500;
+            -fx-background-radius: 12;
+            -fx-cursor: hand;
+            -fx-border-color: #333333;
+            -fx-border-width: 1;
+            -fx-border-radius: 12;
+        """.formatted(BG_SECONDARY, TEXT_PRIMARY));
+
+        btn.setOnMouseEntered(e -> btn.setStyle(btn.getStyle().replace(BG_SECONDARY, BG_TERTIARY)));
+        btn.setOnMouseExited(e -> btn.setStyle(btn.getStyle().replace(BG_TERTIARY, BG_SECONDARY)));
+
+        return btn;
     }
 
     private void showDisplaySettings() {
-        VBox panel = new VBox(15);
-        panel.setPadding(new Insets(20));
+        VBox panel = new VBox(25);
+        panel.setPadding(new Insets(0));
 
         Label title = new Label("Display Settings");
-        title.setStyle("-fx-font-size: 50px; -fx-font-weight: bold; -fx-text-fill: white;");
+        title.setStyle("-fx-font-size: 36px; -fx-font-weight: 700; -fx-text-fill: " + TEXT_PRIMARY + ";");
 
-        Label brightness = new Label("Brightness: 50%");
-        VBox brightnessSection = new VBox(8);
-        brightness.setStyle("-fx-text-fill: white; -fx-font-size: 25px; -fx-font-family: 'Arial'");
+        // Brightness Section
+        VBox brightnessSection = createSettingSection("Brightness", "50%");
+        Label brightnessLabel = (Label) brightnessSection.getChildren().get(0);
+        
+        Slider brightnessSlider = createStyledSlider(50);
+        brightnessSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            int value = newVal.intValue();
+            brightnessLabel.setText("Brightness — " + value + "%");
+        });
 
-        Slider brightnessSlider = new Slider(0, 100, 50);
-        brightnessSlider.setShowTickLabels(true);
-        brightnessSlider.setShowTickMarks(true);
-        brightnessSlider.setMajorTickUnit(25);
-        brightnessSlider.setBlockIncrement(5);
+        brightnessSection.getChildren().add(brightnessSlider);
 
-        brightnessSlider.sceneProperty().addListener((obs, oldScene, newScene) -> {
+        // Resolution Section
+        VBox resolutionBox = createInfoCard("Resolution", "1920 × 1080");
+
+        panel.getChildren().addAll(title, brightnessSection, resolutionBox);
+
+        contentArea.getChildren().clear();
+        contentArea.getChildren().add(panel);
+    }
+
+    private VBox createSettingSection(String label, String value) {
+        VBox section = new VBox(12);
+        Label titleLabel = new Label(label + " — " + value);
+        titleLabel.setStyle("-fx-text-fill: " + TEXT_PRIMARY + "; -fx-font-size: 20px; -fx-font-weight: 600;");
+        section.getChildren().add(titleLabel);
+        return section;
+    }
+
+    private VBox createInfoCard(String label, String value) {
+        VBox card = new VBox(8);
+        card.setPadding(new Insets(20));
+        card.setStyle("""
+            -fx-background-color: %s;
+            -fx-background-radius: 12;
+            -fx-border-color: #333333;
+            -fx-border-width: 1;
+            -fx-border-radius: 12;
+        """.formatted(BG_SECONDARY));
+
+        Label titleLabel = new Label(label);
+        titleLabel.setStyle("-fx-text-fill: " + TEXT_SECONDARY + "; -fx-font-size: 14px; -fx-font-weight: 500;");
+
+        Label valueLabel = new Label(value);
+        valueLabel.setStyle("-fx-text-fill: " + TEXT_PRIMARY + "; -fx-font-size: 22px; -fx-font-weight: 600;");
+
+        card.getChildren().addAll(titleLabel, valueLabel);
+        return card;
+    }
+
+    private Slider createStyledSlider(double initialValue) {
+        Slider slider = new Slider(0, 100, initialValue);
+        slider.setShowTickLabels(false);
+        slider.setShowTickMarks(false);
+        slider.setMaxWidth(500);
+
+        slider.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
                 newScene.addPostLayoutPulseListener(() -> {
-                    brightnessSlider.lookupAll(".axis").forEach(axis -> {
-                        axis.setStyle("-fx-tick-label-fill: white;");
+                    slider.lookupAll(".axis").forEach(axis -> {
+                        axis.setStyle("-fx-tick-label-fill: " + TEXT_SECONDARY + ";");
                     });
                 });
             }
         });
 
-        brightnessSlider.setStyle("""
-            .track {
-                -fx-background-color: #1e1e1e;
-                -fx-pref-height: 8px;
+        slider.setStyle("""
+            -fx-background-color: transparent;
+            .slider .track {
+                -fx-background-color: %s;
+                -fx-pref-height: 6px;
+                -fx-background-radius: 3px;
             }
-            .colored-track {
-                -fx-background-color: linear-gradient(to right, #00ff88, #00ccff);
-                -fx-pref-height: 8px;
+            .slider .colored-track {
+                -fx-background-color: linear-gradient(to right, %s, %s);
+                -fx-pref-height: 6px;
+                -fx-background-radius: 3px;
             }
-            .thumb {
+            .slider .thumb {
                 -fx-background-color: white;
-                -fx-effect: dropshadow(three-pass-box, #00ccff, 8, 0.7, 0, 0);
+                -fx-background-radius: 8px;
+                -fx-pref-width: 16px;
+                -fx-pref-height: 16px;
+                -fx-effect: dropshadow(gaussian, rgba(59, 130, 246, 0.5), 8, 0.3, 0, 0);
             }
-        """);
+            .slider .thumb:hover {
+                -fx-effect: dropshadow(gaussian, rgba(59, 130, 246, 0.8), 12, 0.4, 0, 0);
+            }
+        """.formatted(BG_TERTIARY, ACCENT_BLUE, ACCENT_CYAN));
 
-        brightnessSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
-            int value = newVal.intValue();
-            brightness.setText("Brightness: " + value + "%");
-        });
-
-        brightnessSection.getChildren().addAll(brightness, brightnessSlider);
-
-        Label resolution = new Label("Resolution: 1920x1080");
-        resolution.setStyle("-fx-text-fill: white; -fx-font-size: 25px; -fx-font-family: 'Arial'");
-
-        panel.getChildren().addAll(title, brightnessSection, resolution);
-
-        contentArea.getChildren().clear();
-        contentArea.getChildren().add(panel);
+        return slider;
     }
 
     private void showStorageSettings() {
-        VBox panel = new VBox(15);
-        panel.setPadding(new Insets(20));
+        VBox panel = new VBox(20);
+        panel.setPadding(new Insets(0));
 
         Label title = new Label("Storage Settings");
-        title.setStyle("-fx-font-size: 50px; -fx-font-weight: bold; -fx-text-fill: white;");
+        title.setStyle("-fx-font-size: 36px; -fx-font-weight: 700; -fx-text-fill: " + TEXT_PRIMARY + ";");
 
-        Label space = new Label("Available Space: 256 GB");
-        space.setStyle("-fx-text-fill: white; -fx-font-size: 25px; -fx-font-family: 'Arial'");
+        VBox storageGrid = new VBox(12);
+        storageGrid.getChildren().addAll(
+            createInfoCard("Available Space", "256 GB"),
+            createInfoCard("Installed Apps", "25 GB"),
+            createInfoCard("Photos", "5 GB"),
+            createInfoCard("Videos", "35 GB"),
+            createInfoCard("Temporary Files", "6 GB"),
+            createInfoCard("Others", "5 GB")
+        );
 
-        Label apps = new Label("Installed apps Space: 25 GB");
-        apps.setStyle("-fx-text-fill: white; -fx-font-size: 25px; -fx-font-family: 'Arial'");
-
-        Label others = new Label("Others: 5 GB");
-        others.setStyle("-fx-text-fill: white; -fx-font-size: 25px; -fx-font-family: 'Arial'");
-
-        Label photos = new Label("Photos: 5 GB");
-        photos.setStyle("-fx-text-fill: white; -fx-font-size: 25px; -fx-font-family: 'Arial'");
-
-        Label videos = new Label("Videos: 35 GB");
-        videos.setStyle("-fx-text-fill: white; -fx-font-size: 25px; -fx-font-family: 'Arial'");
-
-        Label temp = new Label("Temporary : 6 GB");
-        temp.setStyle("-fx-text-fill: white; -fx-font-size: 25px; -fx-font-family: 'Arial'");
-
-        panel.getChildren().addAll(title, space, apps, others, photos, videos, temp);
+        panel.getChildren().addAll(title, storageGrid);
 
         contentArea.getChildren().clear();
         contentArea.getChildren().add(panel);
     }
 
     private void showBatterySettings() {
-        VBox panel = new VBox(15);
-        panel.setPadding(new Insets(20));
+        VBox panel = new VBox(20);
+        panel.setPadding(new Insets(0));
 
         Label title = new Label("Battery Settings");
-        title.setStyle("-fx-font-size: 50px; -fx-font-weight: bold; -fx-text-fill: white;");
+        title.setStyle("-fx-font-size: 36px; -fx-font-weight: 700; -fx-text-fill: " + TEXT_PRIMARY + ";");
 
-        Label level = new Label("Battery Level: 85%");
-        level.setStyle("-fx-text-fill: white; -fx-font-size: 25px; -fx-font-family: 'Arial'");
+        VBox batteryGrid = new VBox(12);
+        batteryGrid.getChildren().addAll(
+            createInfoCard("Battery Level", "85%"),
+            createInfoCard("Power Mode", "Balanced"),
+            createInfoCard("Estimated Time", "5h 23m remaining")
+        );
 
-        Label energy = new Label("Energy Saver");
-        energy.setStyle("-fx-text-fill: white; -fx-font-size: 25px; -fx-font-family: 'Arial'");
-
-        Label usage = new Label("Battery Usage");
-        usage.setStyle("-fx-text-fill: white; -fx-font-size: 25px; -fx-font-family: 'Arial'");
-
-        panel.getChildren().addAll(title, level, energy, usage);
+        panel.getChildren().addAll(title, batteryGrid);
 
         contentArea.getChildren().clear();
         contentArea.getChildren().add(panel);
     }
 
     private void showSoundSettings() {
-        VBox panel = new VBox(15);
-        panel.setPadding(new Insets(20));
+        VBox panel = new VBox(25);
+        panel.setPadding(new Insets(0));
 
         Label title = new Label("Sound Settings");
-        title.setStyle("-fx-font-size: 50px; -fx-font-weight: bold; -fx-text-fill: white;");
+        title.setStyle("-fx-font-size: 36px; -fx-font-weight: 700; -fx-text-fill: " + TEXT_PRIMARY + ";");
 
-        Label volume = new Label("Volume: 70%");
-        volume.setStyle("-fx-text-fill: white;-fx-font-size: 25px;");
-
-//        VBox SoundSection = new VBox(8);
-        volume.setStyle("-fx-text-fill: white; -fx-font-size: 25px; -fx-font-family: 'Arial'");
-
-        Slider volumeSlider = new Slider(0, 100, 50);
-        volumeSlider.setShowTickLabels(true);
-        volumeSlider.setShowTickMarks(true);
-        volumeSlider.setMajorTickUnit(25);
-        volumeSlider.setBlockIncrement(5);
-        volumeSlider.sceneProperty().addListener((obs, oldScene, newScene) -> {
-            if (newScene != null) {
-                newScene.addPostLayoutPulseListener(() -> {
-                    volumeSlider.lookupAll(".axis").forEach(axis -> {
-                        axis.setStyle("-fx-tick-label-fill: white;");
-                    });
-                });
-            }
-        });
-        volumeSlider.setStyle("""
-            .track {
-                -fx-background-color: #1e1e1e;
-                -fx-pref-height: 8px;
-            }
-            .colored-track {
-                -fx-background-color: linear-gradient(to right, #00ff88, #00ccff);
-                -fx-pref-height: 8px;
-            }
-            .thumb {
-                -fx-background-color: white;
-                -fx-effect: dropshadow(three-pass-box, #00ccff, 8, 0.7, 0, 0);
-            }
-        """);
-
+        VBox volumeSection = createSettingSection("Volume", "70%");
+        Label volumeLabel = (Label) volumeSection.getChildren().get(0);
+        
+        Slider volumeSlider = createStyledSlider(70);
         volumeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
             int value = newVal.intValue();
-            volume.setText("Volume: " + value + "%");
+            volumeLabel.setText("Volume — " + value + "%");
         });
 
-        panel.getChildren().addAll(title, volume, volumeSlider);
+        volumeSection.getChildren().add(volumeSlider);
+
+        panel.getChildren().addAll(title, volumeSection);
 
         contentArea.getChildren().clear();
         contentArea.getChildren().add(panel);
     }
     
     private void showDevicesManager() {
-    VBox panel = new VBox(20);
-    panel.setPadding(new Insets(20));
-
-    Label title = new Label("Connected Devices");
-    title.setStyle("-fx-font-size: 50px; -fx-font-weight: bold; -fx-text-fill: white;");
-
-    VBox deviceList = new VBox(15);
-
-    for (String[] dev : deviceListData) {
-        String devName = dev[0];
-        String devType = dev[1];
-        String devStatus = dev[2];
-
-        Button btn = new Button("🖥  " + devName + "  —  " + devType + "  (" + devStatus + ")");
-        btn.setPrefWidth(500);
-        btn.setAlignment(Pos.CENTER_LEFT);
-        btn.setStyle("""
-            -fx-background-color: #3a3a3a;
-            -fx-text-fill: white;
-            -fx-font-size: 20;
-            -fx-padding: 10;
-            -fx-background-radius: 8;
-        """);
-
-        btn.setOnAction(evt -> showDeviceDetails(devName, devType, devStatus));
-
-        deviceList.getChildren().add(btn);
-    }
-
-    ScrollPane scroll = new ScrollPane(deviceList);
-    scroll.setFitToWidth(true);
-    scroll.setStyle("-fx-background: #505050; -fx-border-color: transparent;");
-
-    panel.getChildren().addAll(title, scroll);
-
-    contentArea.getChildren().clear();
-    contentArea.getChildren().add(panel);
-}
-
-
-    private void showDeviceDetails(String name, String type, String status) {
         VBox panel = new VBox(20);
-        panel.setPadding(new Insets(20));
+        panel.setPadding(new Insets(0));
 
-        Label title = new Label(name);
-        title.setStyle("-fx-font-size: 45px; -fx-font-weight: bold; -fx-text-fill: white;");
+        Label title = new Label("Connected Devices");
+        title.setStyle("-fx-font-size: 36px; -fx-font-weight: 700; -fx-text-fill: " + TEXT_PRIMARY + ";");
 
-        Label typeLbl = new Label("Type: " + type);
-        typeLbl.setStyle("-fx-text-fill: white; -fx-font-size: 24px;");
+        VBox deviceList = new VBox(12);
 
-        Label statusLbl = new Label("Status: " + status);
-        statusLbl.setStyle("-fx-text-fill: white; -fx-font-size: 24px;");
+        for (String[] dev : deviceListData) {
+            String devName = dev[0];
+            String devType = dev[1];
+            String devStatus = dev[2];
 
-        Button toggleBtn = new Button(status.equals("Enabled") ? "Disable" : "Enable");
-        toggleBtn.setStyle("""
-            -fx-background-color: #3b82f6;
-            -fx-text-fill: white;
-            -fx-font-size: 20;
-            -fx-padding: 10 20;
-        """);
+            Button btn = new Button(String.format("🖥  %s  •  %s", devName, devType));
+            btn.setMaxWidth(Double.MAX_VALUE);
+            btn.setAlignment(Pos.CENTER_LEFT);
+            btn.setPadding(new Insets(18, 24, 18, 24));
+            
+            String statusColor = devStatus.equals("Enabled") ? "#10b981" : TEXT_SECONDARY;
+            btn.setStyle("""
+                -fx-background-color: %s;
+                -fx-text-fill: %s;
+                -fx-font-size: 18px;
+                -fx-font-weight: 500;
+                -fx-background-radius: 12;
+                -fx-cursor: hand;
+                -fx-border-color: %s;
+                -fx-border-width: 1 1 1 4;
+                -fx-border-radius: 12;
+            """.formatted(BG_SECONDARY, TEXT_PRIMARY, statusColor));
 
-        toggleBtn.setOnAction(e -> {
-            boolean isEnabled = statusLbl.getText().contains("Enabled");
-            statusLbl.setText("Status: " + (isEnabled ? "Disabled" : "Enabled"));
-            toggleBtn.setText(isEnabled ? "Enable" : "Disable");
-        });
+            btn.setOnMouseEntered(e -> btn.setStyle(btn.getStyle().replace(BG_SECONDARY, BG_TERTIARY)));
+            btn.setOnMouseExited(e -> btn.setStyle(btn.getStyle().replace(BG_TERTIARY, BG_SECONDARY)));
+            btn.setOnAction(evt -> showDeviceDetails(devName, devType, devStatus));
 
-        Button removeBtn = new Button("Remove Device");
-        removeBtn.setStyle("""
-            -fx-background-color: #d9534f;
-            -fx-text-fill: white;
-            -fx-font-size: 20;
-            -fx-padding: 10 20;
-        """);
+            deviceList.getChildren().add(btn);
+        }
 
-        removeBtn.setOnAction(e -> {
-        deviceListData.removeIf(d -> d[0].equals(name));
-        showDevicesManager();
-        });
+        ScrollPane scroll = new ScrollPane(deviceList);
+        scroll.setFitToWidth(true);
+        scroll.setStyle("-fx-background: " + BG_PRIMARY + "; -fx-background-color: " + BG_PRIMARY + "; -fx-border-color: transparent;");
+        scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
 
-        panel.getChildren().addAll(title, typeLbl, statusLbl, toggleBtn, removeBtn);
+        panel.getChildren().addAll(title, scroll);
 
         contentArea.getChildren().clear();
         contentArea.getChildren().add(panel);
     }
 
-    private void showNetworkSettings() {
-        SettingsNavUtils.setActiveButton(networkBtn, deviceBtn, networkBtn, personalizeBtn);
+    private void showDeviceDetails(String name, String type, String status) {
+        VBox panel = new VBox(25);
+        panel.setPadding(new Insets(0));
 
-        VBox panel = new VBox(20);
-        panel.setPadding(new Insets(20));
+        Label title = new Label(name);
+        title.setStyle("-fx-font-size: 32px; -fx-font-weight: 700; -fx-text-fill: " + TEXT_PRIMARY + ";");
+
+        VBox infoBox = new VBox(12);
+        infoBox.getChildren().addAll(
+            createInfoCard("Type", type),
+            createInfoCard("Status", status)
+        );
+
+        VBox buttonBox = new VBox(12);
+        buttonBox.setPadding(new Insets(10, 0, 0, 0));
+
+        Button toggleBtn = new Button(status.equals("Enabled") ? "Disable Device" : "Enable Device");
+        styleActionButton(toggleBtn, ACCENT_BLUE);
+        
+        Label statusLabel = (Label) ((VBox) infoBox.getChildren().get(1)).getChildren().get(1);
+        toggleBtn.setOnAction(e -> {
+            boolean isEnabled = statusLabel.getText().equals("Enabled");
+            statusLabel.setText(isEnabled ? "Disabled" : "Enabled");
+            toggleBtn.setText(isEnabled ? "Enable Device" : "Disable Device");
+        });
+
+        Button removeBtn = new Button("Remove Device");
+        styleActionButton(removeBtn, "#ef4444");
+        removeBtn.setOnAction(e -> {
+            deviceListData.removeIf(d -> d[0].equals(name));
+            showDevicesManager();
+        });
+
+        buttonBox.getChildren().addAll(toggleBtn, removeBtn);
+        panel.getChildren().addAll(title, infoBox, buttonBox);
+
+        contentArea.getChildren().clear();
+        contentArea.getChildren().add(panel);
+    }
+
+    private void styleActionButton(Button btn, String color) {
+        btn.setMaxWidth(Double.MAX_VALUE);
+        btn.setPadding(new Insets(14, 24, 14, 24));
+        btn.setStyle("""
+            -fx-background-color: %s;
+            -fx-text-fill: white;
+            -fx-font-size: 16px;
+            -fx-font-weight: 600;
+            -fx-background-radius: 10;
+            -fx-cursor: hand;
+            -fx-border-width: 0;
+        """.formatted(color));
+
+        btn.setOnMouseEntered(e -> btn.setOpacity(0.9));
+        btn.setOnMouseExited(e -> btn.setOpacity(1.0));
+    }
+
+    private void showNetworkSettings() {
+        SettingsNavUtils.setActiveButton(networkBtn, deviceBtn, networkBtn);
+        
+        // Reset all buttons to default state
+        resetNavButton(deviceBtn);
+        resetNavButton(networkBtn);
+       // resetNavButton(personalizeBtn);
+        
+        // Set active button
+        networkBtn.setStyle("""
+            -fx-background-color: %s;
+            -fx-text-fill: white;
+            -fx-font-size: 16px;
+            -fx-font-weight: 600;
+            -fx-background-radius: 8;
+            -fx-border-width: 0;
+            -fx-border-color: transparent;
+            -fx-background-insets: 0;
+            -fx-focus-color: transparent;
+            -fx-faint-focus-color: transparent;
+        """.formatted(ACCENT_BLUE));
+
+        VBox panel = new VBox(25);
+        panel.setPadding(new Insets(0));
 
         Label title = new Label("Network Settings");
-        title.setStyle("-fx-font-size: 50px; -fx-font-weight: bold; -fx-text-fill: white;");
+        title.setStyle("-fx-font-size: 36px; -fx-font-weight: 700; -fx-text-fill: " + TEXT_PRIMARY + ";");
 
-        VBox wifiSection = new VBox(10);
+        // Wi-Fi Section
+        VBox wifiSection = new VBox(15);
         Label wifiTitle = new Label("Wi-Fi");
-        wifiTitle.setStyle("-fx-font-size: 28px; -fx-text-fill: white;");
+        wifiTitle.setStyle("-fx-font-size: 24px; -fx-font-weight: 600; -fx-text-fill: " + TEXT_PRIMARY + ";");
 
         Label wifiStatus = new Label();
         updateWifiStatusLabel(wifiStatus);
 
-        Button toggleWifiBtn = new Button(SettingsWindow.wifiConnected ? "Turn Off" : "Turn On");
-        toggleWifiBtn.setStyle("""
-            -fx-background-color: #3b82f6;
-            -fx-text-fill: white;
-            -fx-font-size: 18;
-            -fx-padding: 10 20;
-        """);
+        Button toggleWifiBtn = new Button(SettingsWindow.wifiConnected ? "Turn Off Wi-Fi" : "Turn On Wi-Fi");
+        styleActionButton(toggleWifiBtn, wifiConnected ? "#ef4444" : ACCENT_BLUE);
         toggleWifiBtn.setOnAction(e -> {
-        SettingsWindow.wifiConnected = !SettingsWindow.wifiConnected;
-        toggleWifiBtn.setText(SettingsWindow.wifiConnected ? "Turn Off" : "Turn On");
-        updateWifiStatusLabel(wifiStatus);
-      });
-
+            SettingsWindow.wifiConnected = !SettingsWindow.wifiConnected;
+            toggleWifiBtn.setText(SettingsWindow.wifiConnected ? "Turn Off Wi-Fi" : "Turn On Wi-Fi");
+            styleActionButton(toggleWifiBtn, wifiConnected ? "#ef4444" : ACCENT_BLUE);
+            updateWifiStatusLabel(wifiStatus);
+        });
 
         Label nearbyTitle = new Label("Available Networks");
-        nearbyTitle.setStyle("-fx-font-size: 24px; -fx-text-fill: white;");
+        nearbyTitle.setStyle("-fx-font-size: 18px; -fx-font-weight: 600; -fx-text-fill: " + TEXT_SECONDARY + "; -fx-padding: 10 0 5 0;");
 
         VBox networksList = new VBox(10);
-        String[] fakeNetworks = {
-                "Home_WiFi_5G",
-                "CoffeeShop_Free",
-                "LibraryNet",
-                "XEN-OS-Dev-AP"
-        };
+        String[] fakeNetworks = {"Home_WiFi_5G", "CoffeeShop_Free", "LibraryNet", "XEN-OS-Dev-AP"};
 
         for (String network : fakeNetworks) {
-            Button networkBtn = new Button("📶  " + network);
-            networkBtn.setPrefWidth(300);
-            networkBtn.setAlignment(Pos.CENTER_LEFT);
-
-            networkBtn.setStyle(getNetworkButtonStyle(network.equals(selectedNetwork)));
-
+            Button networkBtn = createNetworkButton(network, network.equals(selectedNetwork));
             networkBtn.setOnAction(e -> {
                 selectedNetwork = network;
-                refreshNetworkList(networksList, fakeNetworks);
+                refreshNetworkList(networksList, fakeNetworks, wifiStatus);
                 updateWifiStatusLabel(wifiStatus);
             });
-
             networksList.getChildren().add(networkBtn);
         }
 
         wifiSection.getChildren().addAll(wifiTitle, wifiStatus, toggleWifiBtn, nearbyTitle, networksList);
 
-        VBox ipSection = new VBox(10);
-        Label ipTitle = new Label("IP Address");
-        ipTitle.setStyle("-fx-font-size: 28px; -fx-text-fill: white;");
-        TextField ipField = new TextField("192.168.1.14");
-        ipField.textProperty().addListener((obs, oldVal, newVal) -> {
-        currentIP = newVal;
-     });
+        // Network Configuration
+        VBox configSection = new VBox(15);
+        configSection.setPadding(new Insets(20, 0, 0, 0));
 
-        styleNetworkField(ipField);
-        ipSection.getChildren().addAll(ipTitle, ipField);
+        TextField ipField = createStyledTextField(currentIP, "IP Address");
+        ipField.textProperty().addListener((obs, oldVal, newVal) -> currentIP = newVal);
 
-        VBox dnsSection = new VBox(10);
-        Label dnsTitle = new Label("DNS Server");
-        dnsTitle.setStyle("-fx-font-size: 28px; -fx-text-fill: white;");
-        TextField dnsField = new TextField("8.8.8.8");
-        styleNetworkField(dnsField);
-        dnsSection.getChildren().addAll(dnsTitle, dnsField);
+        TextField dnsField = createStyledTextField("8.8.8.8", "DNS Server");
+        TextField gatewayField = createStyledTextField("192.168.1.1", "Gateway");
 
-        VBox gatewaySection = new VBox(10);
-        Label gatewayTitle = new Label("Gateway");
-        gatewayTitle.setStyle("-fx-font-size: 28px; -fx-text-fill: white;");
-        TextField gatewayField = new TextField("192.168.1.1");
-        styleNetworkField(gatewayField);
-        gatewaySection.getChildren().addAll(gatewayTitle, gatewayField);
-
-        panel.getChildren().addAll(
-                title,
-                wifiSection,
-                ipSection,
-                dnsSection,
-                gatewaySection
+        configSection.getChildren().addAll(
+            createFieldWithLabel("IP Address", ipField),
+            createFieldWithLabel("DNS Server", dnsField),
+            createFieldWithLabel("Gateway", gatewayField)
         );
+
+        panel.getChildren().addAll(title, wifiSection, configSection);
 
         ScrollPane scroll = new ScrollPane(panel);
         scroll.setFitToWidth(true);
-        scroll.setStyle("-fx-background: #505050; -fx-border-color: transparent;");
+        scroll.setStyle("""
+            -fx-background: %s;
+            -fx-background-color: %s;
+            -fx-border-color: transparent;
+        """.formatted(BG_PRIMARY, BG_PRIMARY));
+        
+        // Apply styling after scene is rendered
+        scroll.skinProperty().addListener((obs, oldSkin, newSkin) -> {
+            if (newSkin != null) {
+                javafx.application.Platform.runLater(() -> {
+                    var vbar = scroll.lookup(".scroll-bar:vertical");
+                    if (vbar != null) {
+                        vbar.setStyle("""
+                            -fx-background-color: %s;
+                            -fx-pref-width: 8px;
+                        """.formatted(BG_PRIMARY));
+                        
+                        var thumb = vbar.lookup(".thumb");
+                        if (thumb != null) {
+                            thumb.setStyle("""
+                                -fx-background-color: %s;
+                                -fx-background-radius: 4px;
+                            """.formatted(BG_TERTIARY));
+                        }
+                        
+                        var track = vbar.lookup(".track");
+                        if (track != null) {
+                            track.setStyle("""
+                                -fx-background-color: %s;
+                                -fx-background-radius: 4px;
+                            """.formatted(BG_SECONDARY));
+                        }
+                        
+                        var incrBtn = vbar.lookup(".increment-button");
+                        var decrBtn = vbar.lookup(".decrement-button");
+                        if (incrBtn != null) incrBtn.setStyle("-fx-opacity: 0;");
+                        if (decrBtn != null) decrBtn.setStyle("-fx-opacity: 0;");
+                    }
+                });
+            }
+        });
 
         contentArea.getChildren().clear();
         contentArea.getChildren().add(scroll);
     }
 
-    private void refreshNetworkList(VBox networksList, String[] networks) {
+    private Button createNetworkButton(String network, boolean selected) {
+        Button btn = new Button("📶  " + network);
+        btn.setMaxWidth(Double.MAX_VALUE);
+        btn.setAlignment(Pos.CENTER_LEFT);
+        btn.setPadding(new Insets(16, 20, 16, 20));
+        
+        if (selected) {
+            btn.setStyle("""
+                -fx-background-color: %s;
+                -fx-text-fill: white;
+                -fx-font-size: 16px;
+                -fx-font-weight: 600;
+                -fx-background-radius: 10;
+                -fx-cursor: hand;
+                -fx-border-width: 0;
+            """.formatted(ACCENT_BLUE));
+        } else {
+            btn.setStyle("""
+                -fx-background-color: %s;
+                -fx-text-fill: %s;
+                -fx-font-size: 16px;
+                -fx-font-weight: 500;
+                -fx-background-radius: 10;
+                -fx-cursor: hand;
+                -fx-border-color: #333333;
+                -fx-border-width: 1;
+                -fx-border-radius: 10;
+            """.formatted(BG_SECONDARY, TEXT_PRIMARY));
+            
+            btn.setOnMouseEntered(e -> btn.setStyle(btn.getStyle().replace(BG_SECONDARY, BG_TERTIARY)));
+            btn.setOnMouseExited(e -> btn.setStyle(btn.getStyle().replace(BG_TERTIARY, BG_SECONDARY)));
+        }
+        
+        return btn;
+    }
+
+    private void refreshNetworkList(VBox networksList, String[] networks, Label wifiStatus) {
         networksList.getChildren().clear();
         for (String net : networks) {
-            Button btn = new Button("📶  " + net);
-            btn.setPrefWidth(300);
-            btn.setAlignment(Pos.CENTER_LEFT);
-            btn.setStyle(getNetworkButtonStyle(net.equals(selectedNetwork)));
+            Button btn = createNetworkButton(net, net.equals(selectedNetwork));
             btn.setOnAction(e -> {
                 selectedNetwork = net;
-                refreshNetworkList(networksList, networks);
+                refreshNetworkList(networksList, networks, wifiStatus);
+                updateWifiStatusLabel(wifiStatus);
             });
             networksList.getChildren().add(btn);
         }
     }
 
-    private String getNetworkButtonStyle(boolean selected) {
-        if (selected) {
-            return """
-                -fx-background-color: #1e90ff;
-                -fx-text-fill: white;
-                -fx-font-size: 20;
-                -fx-padding: 10;
-                -fx-background-radius: 8;
-                -fx-border-radius: 8;
-            """;
-        }
-        return """
-            -fx-background-color: #3a3a3a;
-            -fx-text-fill: white;
-            -fx-font-size: 20;
-            -fx-padding: 10;
-            -fx-background-radius: 8;
-            -fx-border-radius: 8;
-        """;
-    }
-
     private void updateWifiStatusLabel(Label label) {
-        String icon = SettingsWindow.wifiConnected
-        ? "📶 (Connected)"
-        : "📡 (Disconnected)";
-        label.setText("Status: " + icon + " — " + selectedNetwork);
-        label.setStyle("-fx-text-fill: white; -fx-font-size: 22px;");
+        String icon = SettingsWindow.wifiConnected ? "📶" : "📡";
+        String status = SettingsWindow.wifiConnected ? "Connected" : "Disconnected";
+        String color = SettingsWindow.wifiConnected ? "#10b981" : TEXT_SECONDARY;
+        
+        label.setText(icon + "  " + status + "  •  " + selectedNetwork);
+        label.setStyle("-fx-text-fill: " + color + "; -fx-font-size: 16px; -fx-font-weight: 500;");
     }
 
-    private void styleNetworkField(TextField field) {
+    private TextField createStyledTextField(String text, String prompt) {
+        TextField field = new TextField(text);
+        field.setPromptText(prompt);
         field.setStyle("""
-            -fx-background-color: #3a3a3a;
-            -fx-text-fill: white;
-            -fx-font-size: 20;
-            -fx-padding: 8;
+            -fx-background-color: %s;
+            -fx-text-fill: %s;
+            -fx-prompt-text-fill: %s;
+            -fx-font-size: 16px;
+            -fx-padding: 12 16;
             -fx-background-radius: 8;
+            -fx-border-color: #333333;
+            -fx-border-width: 1;
             -fx-border-radius: 8;
-            -fx-border-color: #555;
-        """);
-        field.setPrefWidth(300);
+        """.formatted(BG_SECONDARY, TEXT_PRIMARY, TEXT_SECONDARY));
+        
+        field.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+            if (isNowFocused) {
+                field.setStyle(field.getStyle().replace("#333333", ACCENT_BLUE));
+            } else {
+                field.setStyle(field.getStyle().replace(ACCENT_BLUE, "#333333"));
+            }
+        });
+        
+        return field;
     }
-    
 
-    private void showPersonalizeSettings() {
-        SettingsNavUtils.setActiveButton(personalizeBtn, deviceBtn, networkBtn, personalizeBtn);
-
-        VBox panel = new VBox(15);
-        panel.setPadding(new Insets(20));
-
-        Label title = new Label("Personalization Settings");
-        title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #ffffff;");
-        panel.setStyle("-fx-text-fill: white;");
-
-        Label theme = new Label("Theme");
-        Label wallpaper = new Label("Wallpaper");
-        Label colors = new Label("Colors");
-
-        panel.getChildren().addAll(title, theme, wallpaper, colors);
-
-        contentArea.getChildren().clear();
-        contentArea.getChildren().add(panel);
+    private VBox createFieldWithLabel(String labelText, TextField field) {
+        VBox box = new VBox(8);
+        Label label = new Label(labelText);
+        label.setStyle("-fx-text-fill: " + TEXT_SECONDARY + "; -fx-font-size: 14px; -fx-font-weight: 600;");
+        box.getChildren().addAll(label, field);
+        return box;
     }
+
+    // private void showPersonalizeSettings() {
+    //     SettingsNavUtils.setActiveButton(personalizeBtn, deviceBtn, networkBtn, personalizeBtn);
+        
+    //     // Reset all buttons to default state
+    //     resetNavButton(deviceBtn);
+    //     resetNavButton(networkBtn);
+    //     resetNavButton(personalizeBtn);
+        
+    //     // Set active button
+    //     personalizeBtn.setStyle("""
+    //         -fx-background-color: %s;
+    //         -fx-text-fill: white;
+    //         -fx-font-size: 16px;
+    //         -fx-font-weight: 600;
+    //         -fx-background-radius: 8;
+    //         -fx-border-width: 0;
+    //         -fx-border-color: transparent;
+    //         -fx-background-insets: 0;
+    //         -fx-focus-color: transparent;
+    //         -fx-faint-focus-color: transparent;
+    //     """.formatted(ACCENT_BLUE));
+
+    //     VBox panel = new VBox(20);
+    //     panel.setPadding(new Insets(0));
 
     public void show() {
         stage.show();
