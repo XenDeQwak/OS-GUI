@@ -66,8 +66,10 @@ public class FileManager {
     }
 
     private void handleDrag(File file, MouseEvent e) {
-        file.setLayoutX(e.getSceneX() - file.getWidth() / 2);
-        file.setLayoutY(e.getSceneY() - file.getHeight() / 2);
+        if (e.getButton() == MouseButton.PRIMARY) {
+            file.setLayoutX(e.getSceneX() - file.getWidth() / 2);
+            file.setLayoutY(e.getSceneY() - file.getHeight() / 2);
+        }
     }
 
     private void handleRelease(File file) {
