@@ -24,6 +24,7 @@
     {
       "name": "New Folder 2",
       "folderId": "324b454c-7ab9-4826-9381-02d45f7a05b2",
+      "parentId": "804da0f2-e0f3-4cb8-958d-65fd90a31760",
       "x": 200.0,
       "y": 0.0,
       "files": [],

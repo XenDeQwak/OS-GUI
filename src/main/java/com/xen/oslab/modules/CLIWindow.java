@@ -70,7 +70,8 @@ public class CLIWindow {
         String command = cmd.split("\\s+")[0].toLowerCase(); 
         
         switch (command) { 
-            case "help": return "Commands: help, time, clear, exit, ping";
+            case "help": return 
+            "Commands: \n help - show available commands \n time - show the current time and date \n clear - clears the entire command line module \n ping <ip address> - pings the current connected network \n exit - exits the command line module";
             case "time": return LocalDateTime.now().toString();
             case "clear": 
                 console.setText(prompt); 
