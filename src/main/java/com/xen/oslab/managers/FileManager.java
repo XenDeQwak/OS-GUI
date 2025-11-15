@@ -118,6 +118,15 @@ public class FileManager {
             occupied[row][col] = true;
     }
 
+    public void deleteFile(File file) {
+        desktopPane.getChildren().remove(file);
+        int[] pos = (int[]) file.getUserData();
+        if (pos != null && pos[0] >= 0 && pos[0] < occupied.length && pos[1] >= 0 && pos[1] < occupied[0].length) {
+            occupied[pos[0]][pos[1]] = false;
+        }
+        storage.deleteFromDesktop(file.getFileId());
+    }
+
     public double getCellW() { return cellW; }
     public double getCellH() { return cellH; }
 

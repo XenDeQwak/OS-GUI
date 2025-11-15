@@ -5,6 +5,7 @@ import java.util.List;
 import com.xen.oslab.managers.storage.FileStorageManager;
 import com.xen.oslab.managers.storage.FolderStorageManager;
 import com.xen.oslab.modules.FolderWindow;
+import com.xen.oslab.objects.File;
 import com.xen.oslab.objects.Folder;
 import com.xen.oslab.utils.FolderEventUtils;
 import com.xen.oslab.utils.SnapOnGrid;
@@ -21,8 +22,10 @@ public class FolderManager {
     private final double cellW, cellH;
     private final FileManager fileManager;
     public final FolderStorageManager fsm;
+    private final java.util.List<javafx.scene.Node> selectedItems;
 
-    public FolderManager(Pane desktopPane, SnapOnGrid snapper, boolean[][] occupied, double cellW, double cellH, FileManager fileManager, FolderStorageManager fsm) {
+    public FolderManager(Pane desktopPane, SnapOnGrid snapper, boolean[][] occupied, double cellW, double cellH, FileManager fileManager, FolderStorageManager fsm, java.util.List<javafx.scene.Node> selectedItems) {
+        this.selectedItems = selectedItems;
         this.desktopPane = desktopPane;
         this.snapper = snapper;
         this.occupied = occupied;
@@ -67,7 +70,24 @@ public class FolderManager {
         ContextMenu menu = FolderEventUtils.createRenameContextMenu(
             folder, 
             () -> fsm.saveFolder(folder),
-            () -> deleteFolder(folder)
+            () -> { if (this.selectedItems.contains(folder)) {
+                java.util.List<javafx.scene.Node> itemsToDelete = new java.util.ArrayList<>(this.selectedItems);
+
+                for (javafx.scene.Node item : itemsToDelete) {
+                    if (item instanceof File) {
+                        this.fileManager.deleteFile((File) item);
+                    } else if (item instanceof Folder f) {
+                        if (f.isDeletable()) {
+                            this.deleteFolder(f);
+                        }
+                    }
+                }
+                this.selectedItems.clear();
+
+            } else {
+            this.deleteFolder(folder);
+        }
+    }
         );
 
         folder.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
@@ -131,7 +151,7 @@ public class FolderManager {
         }
     }
 
-    private void deleteFolder(Folder folder) {
+    public void deleteFolder(Folder folder) {
         desktopPane.getChildren().remove(folder);
 
         int[] pos = (int[]) folder.getUserData();

@@ -1,23 +1,29 @@
 package com.xen.oslab.managers;
 
-import com.xen.oslab.managers.storage.UserStorageManager;
-import com.xen.oslab.managers.storage.BackgroundStorageManager;
-import com.google.gson.*;
-import javafx.application.Platform;
-import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.StackPane;
-import javafx.stage.Stage;
-import javafx.scene.Scene;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.xen.oslab.OSController;
+import com.xen.oslab.managers.storage.BackgroundStorageManager;
+import com.xen.oslab.managers.storage.UserStorageManager;
+
+import javafx.application.Platform;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.PasswordField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 
 public class LoginManager {
 
@@ -129,6 +135,10 @@ public class LoginManager {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/xen/oslab/os-view.fxml"));
             Parent root = loader.load();
+
+            OSController controller = loader.getController();
+            controller.setStage(stage);
+            
             stage.setScene(new Scene(root));
             stage.setMaximized(true);
             stage.centerOnScreen();
